@@ -37,6 +37,7 @@ def hello_world():
     <p>Hello World!</p>
     {login_details}
     {tb}
+    <img src="{login_details['picture']}">
     </body>
     </html>"""
     return response
