@@ -19,10 +19,8 @@ resource "aws_lb" "event-normalisation-alb" {
 }
 
 resource "aws_lb_target_group" "event-normalisation-tg" {
-  name     = "target-group-event-normalisation"
-  port     = 443
-  protocol = "HTTPS"
-  vpc_id   = "${var.vpcid}"
+  name        = "target-group-event-normalisation"
+  target_type = "lambda"
 }
 
 resource "aws_lb_listener" "event-normalisation-listner" {

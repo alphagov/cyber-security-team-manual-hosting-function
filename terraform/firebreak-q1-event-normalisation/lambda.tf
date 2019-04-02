@@ -36,7 +36,6 @@ resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
 EOF
 }
 
-
 resource "aws_lambda_permission" "with_lb" {
   statement_id  = "AllowExecutionFromlb"
   action        = "lambda:InvokeFunction"
