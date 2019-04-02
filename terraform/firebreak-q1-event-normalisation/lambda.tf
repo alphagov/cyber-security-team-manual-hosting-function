@@ -24,7 +24,6 @@ resource "aws_lambda_function" "firebreakq1faas" {
 #      VAR2       = "${var.2}"
 #    }
 #  }
->>>>>>> ce639045ea7e77f4b59f82391e2c48f90b878151
 }
 
 resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
