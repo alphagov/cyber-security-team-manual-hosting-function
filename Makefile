@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := zip
+.DEFAULT_GOAL := deploy
 .PHONY = clean
 
 target_dir:
@@ -15,3 +15,6 @@ clean:
 
 zip: add_deps copy_src
 	cd .target; zip -9 ../firebreakq1faas.zip -r .
+
+deploy: zip
+	cd terraform/firebreak-q1-event-normalisation; terraform apply
