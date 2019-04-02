@@ -13,6 +13,18 @@ resource "aws_lambda_function" "firebreakq1faas" {
   #      VAR2       = "${var.2}"
   #    }
   #  }
+  vpc_config {
+    subnet_ids = ["${aws_subnet.alb-frontend-subnet1-AZ-A.id}", "${aws_subnet.alb-frontend-subnet2-AZ-B.id}"]
+    security_group_ids = ["${aws_security_group.event-normalisation-lambda-ingress.id}", "${aws_security_group.event-normalisation-lambda-egress.id}"]
+  }
+
+#  environment = {
+#    variables = {
+#      VAR1       = "${var.1}"
+#      VAR2       = "${var.2}"
+#    }
+#  }
+>>>>>>> ce639045ea7e77f4b59f82391e2c48f90b878151
 }
 
 resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
@@ -33,6 +45,11 @@ resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
   ]
 }
 EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda-policy-attach" {
+  role       = "${aws_iam_role.firebreakq1faas_iam_lambda.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
 resource "aws_iam_role_policy" "firebreakq1faas_iam_lambda" {

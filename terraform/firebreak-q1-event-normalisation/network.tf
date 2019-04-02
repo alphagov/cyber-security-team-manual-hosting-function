@@ -68,6 +68,48 @@ resource "aws_security_group" "event-normalisation-alb-egress" {
   }
 }
 
+# A security group for the event-normalisation lambda ingress
+resource "aws_security_group" "event-normalisation-lambda-ingress" {
+  vpc_id      = "${var.vpcid}"
+  name        = "event-normalisation-lambda-ingress"
+  description = "A security group for the event-normalisation Lambda ingress"
+
+  # HTTPS ingress to the lambda from the ALB 
+  egress {
+    protocol        = "tcp"
+    from_port       = 443
+    to_port         = 443
+    security_groups = ["${aws_security_group.event-normalisation-alb-egress.id}"]
+  }
+
+  tags {
+    Name      = "event-normalisation-lambda-sg-ingress"
+    Product   = "security-group"
+    ManagedBy = "terraform"
+  }
+}
+
+# A security group for the event-normalisation lambda egress
+resource "aws_security_group" "event-normalisation-lambda-egress" {
+  vpc_id      = "${var.vpcid}"
+  name        = "event-normalisation-lambda-egress"
+  description = "A security group for the event-normalisation Lambda egress"
+
+  # egress from the lambda 
+  egress {
+    protocol     = "-1"
+    from_port    = 0
+    to_port      = 0
+    cidr_blocks  = ["0.0.0.0/0"]
+  }
+
+  tags {
+    Name      = "event-normalisation-lambda-sg-egress"
+    Product   = "security-group"
+    ManagedBy = "terraform"
+  }
+}
+
 ## An internet gateway for the VPC
 #resource "aws_internet_gateway" "main-igw" {
 #  vpc_id = "${var.vpcid}"
