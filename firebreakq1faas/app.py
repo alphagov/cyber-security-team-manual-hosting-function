@@ -64,3 +64,13 @@ def good_to_go():
     </body>
     </html>"""
     return response
+
+
+@app.route('/<path:path>')
+def send_static(path):
+    print(path)
+    return send_from_directory('static', path)
+
+
+if __name__ == "__main__":
+    app.run(port=5000)

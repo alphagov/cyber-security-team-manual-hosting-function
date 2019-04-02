@@ -21,3 +21,6 @@ zip: add_deps copy_src
 
 deploy: zip
 	cd terraform/firebreak-q1-event-normalisation; terraform apply
+	
+run: add_deps copy_src
+	python .target/app.py
