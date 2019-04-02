@@ -108,3 +108,6 @@ venv.bak/
 
 # Ignore .terraform things
 *.terraform*
+
+# swap files stay away
+*.swp
