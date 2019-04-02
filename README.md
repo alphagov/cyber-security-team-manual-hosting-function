@@ -1,5 +1,10 @@
 # firebreak-q1-faas
 
+Just run this to build and deploy:
+``` shell
+make
+```
+
 To make a target zip
 
 ``` shell

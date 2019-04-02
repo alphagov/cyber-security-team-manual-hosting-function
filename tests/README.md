@@ -17,4 +17,7 @@ while inotifywait -r -e modify tests firebreakq1faas ; do clear; tox; done
 You can find information for testing flask applications at http://flask.pocoo.org/docs/1.0/testing/
 
 # fixtures
-Test data is kept in this directory
+Test data is kept in this directory.
+
+# fixtures/casstets
+Are used by the [pyvcr](https://vcrpy.readthedocs.io/en/latest/usage.html) library to store network requests and responses with the test suite.

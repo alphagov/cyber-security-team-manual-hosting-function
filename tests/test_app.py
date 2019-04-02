@@ -21,6 +21,10 @@ vcr = vcr.VCR(
 
 @pytest.fixture(scope="session")
 def client():
+    """Setup a flask test client. This is used to connect to the test
+    server and make requests.
+    """
+
     app.config['TESTING'] = True
     app.config['verify_oidc'] = False
     client = app.test_client()
@@ -29,16 +33,23 @@ def client():
 
 @pytest.fixture(scope="session")
 def alb_https_odic_get_root():
+    """Load a JSON alb request that has OIDC information in it.
+    """
     with open("tests/fixtures/alb_https_oidc_get_root.json", "r") as f:
         return json.load(f)
 
 
 @vcr.use_cassette()
 def test_root(client, alb_https_odic_get_root):
+    """Test the '/' route to check that the output is html and contains 'Hello'
+    """
     result = client.get("/", headers=alb_https_odic_get_root['headers'])
     assert b"Hello" in result.data
 
 
 def test_good_to_go(client):
+    """Test the '/__gtg' endpoint works and returns the text 'Good to
+    Go!'. This is used by the ELB healthcheck.
+    """
     result = client.get("/__gtg")
     assert b"Good to Go!" in result.data
