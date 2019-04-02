@@ -11,8 +11,14 @@ from firebreakq1faas.lambda_handler import lambda_handler  # noqa
 
 
 @pytest.fixture
-def get_root():
-    return lambda_handler(None, None)
+def alb_http_get():
+    with open("tests/fixtures/alb_http_get.json", "r") as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def get_root(alb_http_get):
+    return lambda_handler(alb_http_get, None)
 
 
 def test_lambda_handler_returns_dict(get_root):

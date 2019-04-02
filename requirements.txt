@@ -1,1 +1,3 @@
 structlog
+serverless_wsgi
+flask
