@@ -3,7 +3,13 @@
 To make a target zip
 
 ``` shell
-make
+make zip
+```
+
+To Deploy
+
+``` shell
+make deploy
 ```
 
 To run the tests
