@@ -7,14 +7,13 @@ resource "aws_lambda_function" "firebreakq1faas" {
   handler          = "lambda_handler.lambda_handler"
   runtime          = "${var.runtime}"
 
-#  environment = {
-#    variables = {
-#      VAR1       = "${var.1}"
-#      VAR2       = "${var.2}"
-#    }
-#  }
+  #  environment = {
+  #    variables = {
+  #      VAR1       = "${var.1}"
+  #      VAR2       = "${var.2}"
+  #    }
+  #  }
 }
-
 
 resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
   name = "iam_for_lambda"
