@@ -62,7 +62,7 @@ resource "aws_iam_role_policy" "firebreakq1faas_iam_lambda" {
         {
             "Effect": "Allow",
             "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:eu-west-1:${data.aws_caller_identity.current.account_id}:*"
+            "Resource": "arn:aws:logs:eu-west-2:${data.aws_caller_identity.current.account_id}:*"
         },
         {
             "Effect": "Allow",
@@ -71,7 +71,7 @@ resource "aws_iam_role_policy" "firebreakq1faas_iam_lambda" {
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:eu-west-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/firebreakq1faas:*"
+                "arn:aws:logs:eu-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/firebreakq1faas:*"
             ]
         }
     ]
