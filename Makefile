@@ -8,7 +8,7 @@ copy_src: target_dir
 	cp firebreakq1faas/*.py .target
 
 add_deps: target_dir
-	pip3 install -r requirements.txt --system -t .target
+	pip3 install -r  requirements.txt -t .target
 
 clean:
 	rm -rf .target *.egg-info .tox venv *.zip .pytest_cache htmlcov **/__pycache__
