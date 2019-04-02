@@ -13,3 +13,5 @@ provider "aws" {
   region              = "eu-west-2"
   allowed_account_ids = ["489877524855"]
 }
+
+data "aws_caller_identity" "current" {}

@@ -36,6 +36,34 @@ resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
 EOF
 }
 
+resource "aws_iam_role_policy" "firebreakq1faas_iam_lambda" {
+  name = "test_policy"
+  role = "${aws_iam_role.firebreakq1faas_iam_lambda.id}"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogGroup",
+            "Resource": "arn:aws:logs:eu-west-1:${data.aws_caller_identity.current.account_id}:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:eu-west-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/firebreakq1faas:*"
+            ]
+        }
+    ]
+}
+EOF
+}
+
 resource "aws_lambda_permission" "with_lb" {
   statement_id  = "AllowExecutionFromlb"
   action        = "lambda:InvokeFunction"
