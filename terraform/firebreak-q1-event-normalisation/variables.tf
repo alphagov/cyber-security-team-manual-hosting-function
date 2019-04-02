@@ -40,3 +40,8 @@ variable "alb_certificate_arn" {
   type        = "string"
 }
 
+variable "runtime" {
+  description = "runtime for lambda"
+  default     = "python3.7"
+  type        = "string"
+}
