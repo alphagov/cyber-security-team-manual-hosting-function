@@ -11,7 +11,7 @@ resource "aws_lambda_function" "firebreakq1faas" {
   source_code_hash = "${data.archive_file.firebreakq1faas_zip.output_base64sha256}"
   function_name    = "firebreakq1faas"
   role             = "${aws_iam_role.firebreakq1faas_iam_lambda.arn}"
-  handler          = "main.lambda_handler"
+  handler          = "lambda_handler.lambda_handler"
   runtime          = "${var.runtime}"
 
 #  environment = {
