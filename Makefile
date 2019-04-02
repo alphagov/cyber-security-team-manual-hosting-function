@@ -1,7 +1,10 @@
 .DEFAULT_GOAL := deploy
 .PHONY = clean
 
-target_dir:
+test:
+	tox
+
+target_dir: test
 	mkdir -p .target
 
 copy_src: target_dir
