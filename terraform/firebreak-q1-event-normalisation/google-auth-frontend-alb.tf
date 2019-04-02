@@ -21,9 +21,10 @@ resource "aws_lb" "event-normalisation-alb" {
 resource "aws_lb_target_group" "event-normalisation-tg" {
   name        = "target-group-event-normalisation"
   target_type = "lambda"
+
   health_check {
-    path = "/__gtg"
-    matcher = "200"
+    path     = "/__gtg"
+    matcher  = "200"
     interval = "60"
   }
 }
