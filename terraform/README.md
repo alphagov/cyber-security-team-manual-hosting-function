@@ -7,3 +7,10 @@ cd terraform/firebreak-q1-event-normalisation/
 terraform init
 terraform apply
 ```
+
+
+# Google openid config
+
+Alex started the `firebreakq1faas` project with google.
+
+[OpenID settings](https://accounts.google.com/.well-known/openid-configuration)

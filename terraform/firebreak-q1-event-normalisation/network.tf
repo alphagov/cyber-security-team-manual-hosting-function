@@ -6,9 +6,9 @@ resource "aws_subnet" "alb-frontend-subnet1-AZ-A" {
   vpc_id                  = "${var.vpcid}"
 
   tags {
-    Name          = "firebreak-q1-event-normalisation-subnet-2-az-a"
-    Product       = "subnet"
-    ManagedBy     = "terraform"
+    Name      = "firebreak-q1-event-normalisation-subnet-2-az-a"
+    Product   = "subnet"
+    ManagedBy = "terraform"
   }
 }
 
@@ -20,9 +20,9 @@ resource "aws_subnet" "alb-frontend-subnet2-AZ-B" {
   vpc_id                  = "${var.vpcid}"
 
   tags {
-    Name          = "firebreak-q1-event-normalisation-subnet-2-az-b"
-    Product       = "subnet"
-    ManagedBy     = "terraform"
+    Name      = "firebreak-q1-event-normalisation-subnet-2-az-b"
+    Product   = "subnet"
+    ManagedBy = "terraform"
   }
 }
 
@@ -41,9 +41,9 @@ resource "aws_security_group" "event-normalisation-alb-ingress" {
   }
 
   tags {
-    Name        = "event-normalisation-alb-sg-ingress"
-    Product     = "security-group"
-    ManagedBy   = "terraform"
+    Name      = "event-normalisation-alb-sg-ingress"
+    Product   = "security-group"
+    ManagedBy = "terraform"
   }
 }
 
@@ -62,9 +62,9 @@ resource "aws_security_group" "event-normalisation-alb-egress" {
   }
 
   tags {
-    Name        = "event-normalisation-alb-sg-egress"
-    Product     = "security-group"
-    ManagedBy   = "terraform"
+    Name      = "event-normalisation-alb-sg-egress"
+    Product   = "security-group"
+    ManagedBy = "terraform"
   }
 }
 
