@@ -2,26 +2,54 @@ from flask import (
     Flask,
     request
 )
-
+from oidc import login
 from slogging import log
+import traceback
 app = Flask(__name__)
 
 
 @app.route("/")
 def hello_world():
-    """Lambda handler entry point
-
-    :param event: An event from an ALB
-    :param context: An AWS context object
-    :returns: HTML
-    :rtype: str
-
+    """ A page to say hello to the world
     """
-    log.msg(request.headers)
-
-    response = """<html>
+    log.msg('hello_world')
+    try:
+        login_details = login(
+            request.headers['X-Amzn-Oidc-Data'],
+            verify=app.config.get('verify_oidc', True)
+        )
+        tb = ""
+    except Exception:
+        tb = traceback.format_exc()
+        login_details = "LOGIN FAILED"
+    response = f"""<html>
     <head>
     <title>Hello World!</title>
+    <style>
+    html, body {{
+    margin: 0; padding: 0;
+    font-family: arial; font-weight: 700; font-size: 3em;
+    text-align: center;
+    }}
+    </style>
+    </head>
+    <body>
+    <p>Hello World!</p>
+    {login_details}
+    {tb}
+    </body>
+    </html>"""
+    return response
+
+
+@app.route("/__gtg")
+def good_to_go():
+    """An unauthenticated route for health checks
+    """
+    log.msg('gtg')
+    response = """<html>
+    <head>
+    <title>Good to Go!</title>
     <style>
     html, body {
     margin: 0; padding: 0;
@@ -31,7 +59,7 @@ def hello_world():
     </style>
     </head>
     <body>
-    <p>Hello World!</p>
+    <p>Good to Go!</p>
     </body>
     </html>"""
     return response

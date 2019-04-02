@@ -1,0 +1,70 @@
+{
+    "version": 1,
+    "interactions": [
+        {
+            "request": {
+                "method": "GET",
+                "uri": "https://public-keys.auth.elb.eu-west-2.amazonaws.com/307a30c3-8280-4ff5-a78d-6bc5263ffbe8",
+                "body": null,
+                "headers": {
+                    "User-Agent": [
+                        "python-requests/2.21.0"
+                    ],
+                    "Accept-Encoding": [
+                        "gzip, deflate"
+                    ],
+                    "Accept": [
+                        "*/*"
+                    ],
+                    "Connection": [
+                        "keep-alive"
+                    ]
+                }
+            },
+            "response": {
+                "status": {
+                    "code": 200,
+                    "message": "OK"
+                },
+                "headers": {
+                    "Last-Modified": [
+                        "Sun, 24 Mar 2019 22:39:03 GMT"
+                    ],
+                    "X-Amz-Cf-Id": [
+                        "Gym4MZuZA6DhjTsDtjAz4asXPh4O-CWE-Zps2HzintIZXCJSrOkM3Q=="
+                    ],
+                    "Date": [
+                        "Tue, 02 Apr 2019 19:10:49 GMT"
+                    ],
+                    "Connection": [
+                        "keep-alive"
+                    ],
+                    "Content-Length": [
+                        "178"
+                    ],
+                    "Server": [
+                        "AmazonS3"
+                    ],
+                    "ETag": [
+                        "\"5ff21eb6e56da8786db75106d55887bd\""
+                    ],
+                    "Accept-Ranges": [
+                        "bytes"
+                    ],
+                    "Age": [
+                        "7028"
+                    ],
+                    "X-Cache": [
+                        "Hit from cloudfront"
+                    ],
+                    "Via": [
+                        "1.1 db29ce630f36ae7f48a6957d9d80d0be.cloudfront.net (CloudFront)"
+                    ]
+                },
+                "body": {
+                    "string": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEht9xyT5uNwPU2jMeS66VDO8/V+g3\nW1hXk07oIJU3goJmykvVmTZsEFhWsVGQIQtqFpKENOGwHpbkRdaCVMbiMA==\n-----END PUBLIC KEY-----\n"
+                }
+            }
+        }
+    ]
+}

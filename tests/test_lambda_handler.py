@@ -10,15 +10,15 @@ sys.path.insert(0, parentdir + '/firebreakq1faas')
 from firebreakq1faas.lambda_handler import lambda_handler  # noqa
 
 
-@pytest.fixture
-def alb_http_get():
-    with open("tests/fixtures/alb_http_get.json", "r") as f:
+@pytest.fixture(scope="session")
+def alb_https_odic_get_root():
+    with open("tests/fixtures/alb_https_oidc_get_root.json", "r") as f:
         return json.load(f)
 
 
-@pytest.fixture
-def get_root(alb_http_get):
-    return lambda_handler(alb_http_get, None)
+@pytest.fixture(scope="session")
+def get_root(alb_https_odic_get_root):
+    return lambda_handler(alb_https_odic_get_root, None)
 
 
 def test_lambda_handler_returns_dict(get_root):

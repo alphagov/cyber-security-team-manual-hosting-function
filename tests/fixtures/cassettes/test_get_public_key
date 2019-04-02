@@ -1,0 +1,70 @@
+{
+    "version": 1,
+    "interactions": [
+        {
+            "request": {
+                "method": "GET",
+                "uri": "https://public-keys.auth.elb.eu-west-2.amazonaws.com/307a30c3-8280-4ff5-a78d-6bc5263ffbe8",
+                "body": null,
+                "headers": {
+                    "User-Agent": [
+                        "python-requests/2.21.0"
+                    ],
+                    "Accept-Encoding": [
+                        "gzip, deflate"
+                    ],
+                    "Accept": [
+                        "*/*"
+                    ],
+                    "Connection": [
+                        "keep-alive"
+                    ]
+                }
+            },
+            "response": {
+                "status": {
+                    "code": 200,
+                    "message": "OK"
+                },
+                "headers": {
+                    "Server": [
+                        "AmazonS3"
+                    ],
+                    "Date": [
+                        "Tue, 02 Apr 2019 19:10:49 GMT"
+                    ],
+                    "X-Cache": [
+                        "Hit from cloudfront"
+                    ],
+                    "Age": [
+                        "2509"
+                    ],
+                    "ETag": [
+                        "\"5ff21eb6e56da8786db75106d55887bd\""
+                    ],
+                    "Content-Length": [
+                        "178"
+                    ],
+                    "Connection": [
+                        "keep-alive"
+                    ],
+                    "Via": [
+                        "1.1 8023305f07aecc997399beb7e1f5d7a7.cloudfront.net (CloudFront)"
+                    ],
+                    "Last-Modified": [
+                        "Sun, 24 Mar 2019 22:39:03 GMT"
+                    ],
+                    "X-Amz-Cf-Id": [
+                        "xAS4il5P-rfKJbLQ3NPXLzsDUfxHu6Hgbqkq0QcTZAzmtbgmJE1h5A=="
+                    ],
+                    "Accept-Ranges": [
+                        "bytes"
+                    ]
+                },
+                "body": {
+                    "string": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEht9xyT5uNwPU2jMeS66VDO8/V+g3\nW1hXk07oIJU3goJmykvVmTZsEFhWsVGQIQtqFpKENOGwHpbkRdaCVMbiMA==\n-----END PUBLIC KEY-----\n"
+                }
+            }
+        }
+    ]
+}

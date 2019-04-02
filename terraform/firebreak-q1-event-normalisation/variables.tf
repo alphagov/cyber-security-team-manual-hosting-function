@@ -52,5 +52,5 @@ variable "oidc_client_secret" {
 
 variable "runtime" {
   description = "runtime for lambda"
-  default     = "python3.7"
+  default     = "python3.6"
 }

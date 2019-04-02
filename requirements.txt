@@ -1,3 +1,7 @@
 structlog
 serverless_wsgi
 flask
+pyjwt
+requests
+cryptography
+cffi
