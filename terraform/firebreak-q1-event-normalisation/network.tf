@@ -143,3 +143,4 @@ resource "aws_security_group" "event-normalisation-lambda-egress" {
 #  subnet_id      = "${aws_subnet.alb-frontend-subnet.id}"
 #  route_table_id = "${aws_route_table.main-route-table.id}"
 #}
+

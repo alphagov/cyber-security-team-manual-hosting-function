@@ -3,10 +3,10 @@ import inspect
 import sys
 import pytest
 import json
-currentdir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir + '/firebreakq1faas')
+sys.path.insert(0, parentdir + "/firebreakq1faas")
 from firebreakq1faas.lambda_handler import lambda_handler  # noqa
 
 
@@ -28,25 +28,25 @@ def get_root(alb_https_odic_get_root):
 
 def test_lambda_handler_returns_dict(get_root):
     """lambda handler should return a dict to AWS' calling function"""
-    assert(isinstance(get_root, dict))
+    assert isinstance(get_root, dict)
 
 
 def test_lambda_handler_dict_has_body(get_root):
     """The response has to have a 'body' key"""
-    assert("body" in get_root)
+    assert "body" in get_root
 
 
 def test_lambda_handler_dict_has_statusCode(get_root):
     """The response has to have a 'statusCode' key"""
-    assert("statusCode" in get_root)
+    assert "statusCode" in get_root
 
 
 def test_lambda_handler_dict_has_headers(get_root):
     """The response has to have a 'headers' key"""
-    assert("headers" in get_root)
+    assert "headers" in get_root
 
 
 def test_lambda_handler_dict_has_content_type(get_root):
     """The response has to have a 'Content-Type' key as a child of the
     headers key"""
-    assert("Content-Type" in get_root['headers'])
+    assert "Content-Type" in get_root["headers"]

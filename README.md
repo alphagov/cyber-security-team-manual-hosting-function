@@ -5,18 +5,6 @@ Just run this to build and deploy:
 make
 ```
 
-To make a target zip
-
-``` shell
-make zip
-```
-
-To Deploy
-
-``` shell
-make deploy
-```
-
 To run the tests
 
 ``` shell
@@ -31,3 +19,8 @@ cd terraform/firebreak-q1-event-normalisation/
 terraform init
 terraform apply
 ```
+
+# Developing
+
+Please add tests and documentation for your code.
+Format all python code with [black](https://github.com/ambv/black)
