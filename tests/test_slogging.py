@@ -6,7 +6,7 @@ currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir + '/firebreak-q1-faas')
-from firebreakq1faas.logging import (
+from firebreakq1faas.slogging import (
     add_timestamp,
     log
 )  # noqa

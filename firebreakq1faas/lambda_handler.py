@@ -1,4 +1,4 @@
-from .logging import log
+from slogging import log
 
 
 def lambda_handler(event, context):
