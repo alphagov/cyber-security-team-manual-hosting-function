@@ -10,6 +10,26 @@ sys.path.insert(0, parentdir + '/firebreakq1faas')
 from firebreakq1faas.lambda_handler import lambda_handler  # noqa
 
 
-def test_lambda_handler():
-    result = lambda_handler(None, None)
-    assert(result == 'Hello, world!')
+@pytest.fixture
+def get_root():
+    return lambda_handler(None, None)
+
+
+def test_lambda_handler_returns_dict(get_root):
+    assert(isinstance(get_root, dict))
+
+
+def test_lambda_handler_dict_has_body(get_root):
+    assert("body" in get_root)
+
+
+def test_lambda_handler_dict_has_statusCode(get_root):
+    assert("statusCode" in get_root)
+
+
+def test_lambda_handler_dict_has_headers(get_root):
+    assert("headers" in get_root)
+
+
+def test_lambda_handler_dict_has_content_type(get_root):
+    assert("Content-Type" in get_root['headers'])
