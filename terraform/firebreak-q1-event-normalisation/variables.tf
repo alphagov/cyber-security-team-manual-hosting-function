@@ -36,7 +36,7 @@ variable "alb_access_logs" {
 
 variable "alb_certificate_arn" {
   description = "ALB Certificate ARN address"
-  default     = "arn:aws:acm:eu-west-2:489877524855:certificate/88335f6e-1ffa-46a8-8cdb-82ef7992115a"
+  default     = "arn:aws:acm:eu-west-2:489877524855:certificate/5119be97-6e63-4c45-9a7a-a7db360f4921"
   type        = "string"
 }
 
