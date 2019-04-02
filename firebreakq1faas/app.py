@@ -1,4 +1,8 @@
-from flask import Flask
+from flask import (
+    Flask,
+    request
+)
+
 from slogging import log
 app = Flask(__name__)
 
@@ -13,7 +17,7 @@ def hello_world():
     :rtype: str
 
     """
-    log.msg('Test log event')
+    log.msg(request.headers)
 
     response = """<html>
     <head>

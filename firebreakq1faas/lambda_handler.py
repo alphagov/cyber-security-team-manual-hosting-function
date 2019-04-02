@@ -11,5 +11,8 @@ def lambda_handler(event, context):
     :returns: An AWS ALB event
     :rtype: dict
 
+
     """
+    print(event)
+    print(context)
     return serverless_wsgi.handle_request(app.app, event, context)
