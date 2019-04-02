@@ -105,3 +105,6 @@ venv.bak/
 
 *.zip
 *.target
+
+# Ignore .terraform things
+*.terraform*
