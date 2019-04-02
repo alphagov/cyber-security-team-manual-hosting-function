@@ -30,18 +30,18 @@ resource "aws_lb_listener" "event-normalisation-listner" {
   ssl_policy        = "ELBSecurityPolicy-TLS-1-1-2017-01"
   certificate_arn   = "${var.alb_certificate_arn}"
 
-  default_action {
-    type = "authenticate-oidc"
+  # default_action {
+  #   type = "authenticate-oidc"
 
-    authenticate_oidc {
-      authorization_endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
-      client_id              = "${var.oidc_client_id}"
-      client_secret          = "${var.oidc_client_secret}"
-      issuer                 = "https://accounts.google.com"
-      token_endpoint         = "https://oauth2.googleapis.com/token"
-      user_info_endpoint     = "https://openidconnect.googleapis.com/v1/userinfo"
-    }
-  }
+  #   authenticate_oidc {
+  #     authorization_endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+  #     client_id              = "${var.oidc_client_id}"
+  #     client_secret          = "${var.oidc_client_secret}"
+  #     issuer                 = "https://accounts.google.com"
+  #     token_endpoint         = "https://oauth2.googleapis.com/token"
+  #     user_info_endpoint     = "https://openidconnect.googleapis.com/v1/userinfo"
+  #   }
+  # }
 
   default_action {
     target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
