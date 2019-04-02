@@ -1,14 +1,7 @@
 # Lambda
-
-data "archive_file" "firebreakq1faas_zip" {
-  type        = "zip"
-  source_dir  = "../../"
-  output_path = "../../firebreakq1faas.zip"
-}
-
 resource "aws_lambda_function" "firebreakq1faas" {
-  filename         = "${data.archive_file.firebreakq1faas_zip.output_path}"
-  source_code_hash = "${data.archive_file.firebreakq1faas_zip.output_base64sha256}"
+  filename         = "../../firebreakq1faas.zip"
+  source_code_hash = "${filebase64sha256("../../firebreakq1faas.zip")}"
   function_name    = "firebreakq1faas"
   role             = "${aws_iam_role.firebreakq1faas_iam_lambda.arn}"
   handler          = "lambda_handler.lambda_handler"
@@ -43,14 +36,6 @@ resource "aws_iam_role" "firebreakq1faas_iam_lambda" {
 EOF
 }
 
-resource "aws_lambda_function" "firebreakq1faas" {
-  filename         = "../../firebreakq1faas.zip"
-  function_name    = "firebreakq1faas"
-  role             = "${aws_iam_role.firebreakq1faas_iam_lambda.arn}"
-  handler          = "lambda_function.lambda_function"
-  source_code_hash = "${filebase64sha256("../../firebreakq1faas.zip")}"
-  runtime          = "python3.7"
-}
 
 resource "aws_lambda_permission" "with_lb" {
   statement_id  = "AllowExecutionFromlb"
