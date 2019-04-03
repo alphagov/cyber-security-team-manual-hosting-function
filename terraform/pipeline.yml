@@ -61,22 +61,20 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: python
-	  tag: 3.7
+          repository: amazonlinux
       run:
         path: bash
         args:
         - -c
         - |
           set -ueo pipefail
-	  echo "Copying Source from repos"
+          echo "Copying Source from repos"
           cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
           cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
           cd firebreak-q1-faas-build
           yum install -y python3 python3-pip git make zip
-	  which pip3
-          /usr/bin/pip3 install --upgrade pip
-          /usr/bin/pip3 install tox
+          pip3 install --upgrade pip
+          pip install tox
           make zip 
       inputs:
       - name: firebreak-q1-faas-git
@@ -98,8 +96,9 @@ jobs:
         ACCOUNT_ID: '489877524855'
         OIDC_CLIENT_ID: ((oidc_client_id))
         OIDC_CLIENT_SECRET: ((oidc_client_secret))
-        ACCESS_KEY: ((demo-deploy-user-secret-access-key))
-        SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
+        AWS_ACCESS_KEY_ID: ((demo-deploy-user-access-key))
+        AWS_SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
+        AWS_DEFAULT_REGION: 'eu-west-2'
 
       run:
         path: sh
@@ -107,13 +106,6 @@ jobs:
           - -c
           - |
             set -ue
-            echo "Set Access Keys for $ENV $ACCOUNT_ID"
-
-            export "AWS_ACCESS_KEY_ID=${ACCESS_KEY}"
-            export "AWS_SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}"
-            export "AWS_DEFAULT_REGION=eu-west-2"
-
-            aws sts get-caller-identity
 
             # Show what command terraform is running
             set -x
