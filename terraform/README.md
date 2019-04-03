@@ -14,3 +14,7 @@ terraform apply
 Alex started the `firebreakq1faas` project with google.
 
 [OpenID settings](https://accounts.google.com/.well-known/openid-configuration)
+
+# Developing
+
+Format all code with `terraform fmt`

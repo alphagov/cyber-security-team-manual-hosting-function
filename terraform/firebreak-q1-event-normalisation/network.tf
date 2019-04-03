@@ -97,10 +97,10 @@ resource "aws_security_group" "event-normalisation-lambda-egress" {
 
   # egress from the lambda 
   egress {
-    protocol     = "-1"
-    from_port    = 0
-    to_port      = 0
-    cidr_blocks  = ["0.0.0.0/0"]
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags {
@@ -143,3 +143,4 @@ resource "aws_security_group" "event-normalisation-lambda-egress" {
 #  subnet_id      = "${aws_subnet.alb-frontend-subnet.id}"
 #  route_table_id = "${aws_route_table.main-route-table.id}"
 #}
+

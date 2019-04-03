@@ -2,6 +2,7 @@ pytest
 pytest-mock
 pytest-cov
 pytest-pep8
+pytest-black
 tox
 colorama
 pyyaml

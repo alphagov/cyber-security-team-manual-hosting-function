@@ -1,11 +1,8 @@
-from flask import (
-    Flask,
-    request,
-    send_from_directory
-)
+from flask import Flask, request, send_from_directory
 from oidc import login
 from slogging import log
 import traceback
+
 app = Flask(__name__)
 
 
@@ -13,11 +10,11 @@ app = Flask(__name__)
 def hello_world():
     """ A page to say hello to the world
     """
-    log.msg('hello_world')
+    log.msg("hello_world")
     try:
         login_details = login(
-            request.headers['X-Amzn-Oidc-Data'],
-            verify=app.config.get('verify_oidc', True)
+            request.headers["X-Amzn-Oidc-Data"],
+            verify=app.config.get("verify_oidc", True),
         )
         tb = ""
     except Exception:
@@ -50,7 +47,7 @@ def hello_world():
 def good_to_go():
     """An unauthenticated route for health checks
     """
-    log.msg('gtg')
+    log.msg("gtg")
     response = """<html>
     <head>
     <title>Good to Go!</title>

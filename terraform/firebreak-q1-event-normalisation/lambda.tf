@@ -11,7 +11,6 @@ resource "aws_lambda_function" "firebreakq1faas" {
   #   subnet_ids = ["${aws_subnet.alb-frontend-subnet1-AZ-A.id}", "${aws_subnet.alb-frontend-subnet2-AZ-B.id}"]
   #   security_group_ids = ["${aws_security_group.event-normalisation-lambda-ingress.id}", "${aws_security_group.event-normalisation-lambda-egress.id}"]
   # }
-
 }
 
 resource "aws_iam_role" "firebreakq1faas_iam_lambda" {

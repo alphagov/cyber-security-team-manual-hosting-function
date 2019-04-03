@@ -1,0 +1,91 @@
+resources:
+- name: firebreak-q1-faas-git
+  type: git
+  source:
+    branch: master
+    private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
+    uri: git@github.com:alphagov/firebreak-q1-faas.git
+
+- name: cyber-security-team-manual-git
+  type: git
+  source:
+    branch: master
+    private_key: ((cyber-security-team-manual-read-only-ssh-private-key))
+    uri: git@github.com:alphagov/cyber-security-team-manual.git
+
+- name: firebreak-q1-faas-lambda
+  type: cf
+  source:
+    api: https://api.cloud.service.gov.uk
+    organization: gds-tech-ops
+    space: cyber-internal-apps
+    username: ((deploy-paas-user))
+    password: ((deploy-paas-pass))
+    
+jobs:
+- name: deploy-firebreak-q1-faas
+  serial: true
+  plan:
+  - get: firebreak-q1-faas-git
+    trigger: true
+  - task: build-team-manual-docs
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ruby
+          tag: 2.6.2
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -ueo pipefail
+
+          # Concourse inputs and outputs cannot be the same directory
+          # cyber-security-team-manual-build will be deployed to paas
+          # after everything has been built
+          cp -R cyber-security-team-manual-git/* cyber-security-team-manual-build/
+
+          cd cyber-security-team-manual-build
+
+          # Node.js is required for building assets
+          apt-get update
+          apt-get install -y nodejs
+
+          bundle install
+          bundle exec middleman build
+      inputs:
+      - name: cyber-security-team-manual-git
+      outputs:
+      - name: cyber-security-team-manual-build
+  - task: build-docs
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: amazonlinux 
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -ueo pipefail
+          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
+          cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
+          cd firebreak-q1-faas-build
+          yum update -y && yum install -y python3 git make zip
+          pip3 install --upgrade pip
+          pip3 install tox
+          make zip 
+      inputs:
+      - name: firebreak-q1-faas-git
+      - name: cyber-security-team-manual-build
+      outputs:
+      - name: firebreak-q1-faas-build
+  - put: cyber-security-team-manual-paas
+    params:
+      manifest: cyber-security-team-manual-build/manifest.yml 
+      path: cyber-security-team-manual-build
