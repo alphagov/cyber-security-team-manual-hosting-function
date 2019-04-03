@@ -28,29 +28,6 @@ jobs:
   plan:
   - get: firebreak-q1-faas-git
     trigger: true
-  - task: build-docs
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: python
-          tag: 3.7
-      run:
-        path: bash
-        args:
-        - -c
-        - |
-          set -ueo pipefail
-          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
-          cd firebreak-q1-faas-build
-          apt-get update
-          apt-get install -y STUFF
-          PYTHON THINGS HERE TO MAKE THE ZIP FOR THE LAMBDA
-      inputs:
-      - name: firebreak-q1-faas-git
-      outputs:
-      - name: firebreak-q1-faas-build
   - task: build-team-manual-docs
     config:
       platform: linux
@@ -83,6 +60,31 @@ jobs:
       - name: cyber-security-team-manual-git
       outputs:
       - name: cyber-security-team-manual-build
+  - task: build-docs
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: amazonlinux 
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -ueo pipefail
+          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
+          cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
+	  cd firebreak-q1-faas-build
+          yum update -y && yum install -y python3 git make zip
+	  pip3 install --upgrade pip
+          pip3 install tox
+          make zip 
+      inputs:
+      - name: firebreak-q1-faas-git
+      - name: cyber-security-team-manual-build
+      outputs:
+      - name: firebreak-q1-faas-build
   - put: cyber-security-team-manual-paas
     params:
       manifest: cyber-security-team-manual-build/manifest.yml 

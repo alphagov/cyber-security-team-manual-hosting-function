@@ -111,3 +111,4 @@ venv.bak/
 
 # swap files stay away
 *.swp
+setup.cfg
