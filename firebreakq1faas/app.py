@@ -1,9 +1,11 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, render_template
 from oidc import login
 from slogging import log
 import traceback
 
 app = Flask(__name__)
+
+mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
 @app.route("/")
@@ -66,10 +68,38 @@ def good_to_go():
     return response
 
 
-@app.route('/<path:path>')
+@app.route("/raise_error")
+def raise_error():
+    raise Exception("Bad Error")
+
+
+@app.errorhandler(404)
+def handle_bad_request(e):
+    return (
+        render_template(
+            "error.html",
+            title=f"{mastertitle} - Error",
+            error=e,
+            govukfrontendver="2.9.0",
+        ),
+        404,
+    )
+
+
+@app.errorhandler(500)
+def handle_bad_request(e):
+    return (
+        render_template(
+            "error.html", title=f"{mastertitle} - Error", govukfrontendver="2.9.0"
+        ),
+        500,
+    )
+
+
+@app.route("/<path:path>")
 def send_static(path):
     print(path)
-    return send_from_directory('static', path)
+    return send_from_directory("static", path)
 
 
 if __name__ == "__main__":

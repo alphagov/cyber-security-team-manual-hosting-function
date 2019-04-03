@@ -6,9 +6,12 @@ test:
 
 target_dir: test
 	mkdir -p .target/static
+	mkdir -p .target/templates
 
 copy_src: target_dir
-	cp firebreakq1faas/*.py .target; cp -R firebreakq1faas/static/* .target/static/
+	cp firebreakq1faas/*.py .target
+	cp -R firebreakq1faas/static/* .target/static/
+	cp -R firebreakq1faas/templates/* .target/templates/
 
 add_deps: target_dir
 	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt -t .target
