@@ -72,8 +72,9 @@ jobs:
           cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
           cd firebreak-q1-faas-build
           yum update -y && yum install -y python3 python3-pip git make zip
-          pip3 install --upgrade pip
-          pip3 install tox
+	  which pip3
+          /usr/bin/pip3 install --upgrade pip
+          /usr/bin/pip3 install tox
           make zip 
       inputs:
       - name: firebreak-q1-faas-git
