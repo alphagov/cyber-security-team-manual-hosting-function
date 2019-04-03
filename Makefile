@@ -11,13 +11,13 @@ copy_src: target_dir
 	cp firebreakq1faas/*.py .target; cp -R firebreakq1faas/static/* .target/static/
 
 add_deps: target_dir
-	pip3 install -r requirements.txt -t .target
+	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt -t .target
 
 clean:
 	rm -rf .target *.egg-info .tox venv *.zip .pytest_cache htmlcov **/__pycache__ **/*.pyc
 
 zip: add_deps copy_src
-	"[index]\nprefix=\n" > setup.cfg; cd .target; zip -9 ../firebreakq1faas.zip -r .
+	cd .target; zip -9 ../firebreakq1faas.zip -r .
 
 deploy: zip
 	cd terraform/firebreak-q1-event-normalisation; terraform apply
