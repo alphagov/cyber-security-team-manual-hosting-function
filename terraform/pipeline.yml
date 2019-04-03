@@ -19,6 +19,8 @@ jobs:
   plan:
   - get: firebreak-q1-faas-git
     trigger: true
+  - get: cyber-security-team-manual-git
+    trigger: true
 
   - task: build-team-manual-docs
     config:
@@ -69,7 +71,7 @@ jobs:
           cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
           cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
           cd firebreak-q1-faas-build
-          yum update -y && yum install -y python3 git make zip
+          yum update -y && yum install -y python3 python3-pip git make zip
           pip3 install --upgrade pip
           pip3 install tox
           make zip 
@@ -91,10 +93,10 @@ jobs:
       params:
         ENV: demo
         ACCOUNT_ID: '489877524855'
-	OIDC_CLIENT_ID: ((oidc_client_id))
-	OIDC_CLIENT_SECRET: ((oidc_client_secret))
-	ACCESS_KEY: ((demo-deploy-user-secret-access-key))
-	SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
+        OIDC_CLIENT_ID: ((oidc_client_id))
+        OIDC_CLIENT_SECRET: ((oidc_client_secret))
+        ACCESS_KEY: ((demo-deploy-user-secret-access-key))
+        SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
 
       run:
         path: sh
