@@ -113,3 +113,4 @@ venv.bak/
 *.swp
 
 setup.cfg
+.DS_Store
