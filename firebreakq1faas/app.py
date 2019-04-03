@@ -1,5 +1,5 @@
 from flask import Flask, request, send_from_directory
-from oidc import login
+from oidc import login_required
 from slogging import log
 import traceback
 
@@ -7,21 +7,11 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def hello_world():
+@login_required(app)
+def hello_world(login_details):
     """ A page to say hello to the world
     """
     log.msg("hello_world")
-    try:
-        login_details = login(
-            request.headers["X-Amzn-Oidc-Data"],
-            verify=app.config.get("verify_oidc", True),
-        )
-        tb = ""
-    except Exception:
-        tb = traceback.format_exc()
-        login_details = {"msg": "LOGIN FAILED", "picture": "null"}
-
-    print(tb, login_details)
     response = f"""<html>
     <head>
     <title>Hello World!</title>
@@ -35,8 +25,6 @@ def hello_world():
     </head>
     <body>
     <p>Hello World!</p>
-    {login_details}
-    {tb}
     <img src="{login_details['picture']}">
     </body>
     </html>"""
@@ -67,7 +55,8 @@ def good_to_go():
 
 
 @app.route("/<path:path>")
-def send_static(path):
+@login_required(app)
+def send_static(login_details, path):
     print(path)
     return send_from_directory("static", path)
 

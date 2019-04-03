@@ -3,6 +3,8 @@ import requests
 import base64
 import json
 from slogging import log
+from flask import request, redirect
+from functools import wraps
 
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html
 
@@ -57,3 +59,29 @@ def login(encoded_jwt, verify=True):
         encoded_jwt, public_key, algorithms=["ES256"], options={"verify_exp": verify}
     )
     return payload
+
+
+def login_required(app):
+    """Decorator for flask routes to login using oidc.
+
+    :param app: Flask app to use
+    :returns: A decorated function
+    :rtype: func
+    """
+
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            try:
+                login_details = login(
+                    request.headers["X-Amzn-Oidc-Data"],
+                    verify=app.config.get("verify_oidc", True),
+                )
+                return f(login_details, *args, **kwargs)
+            except Exception as e:
+                print(e)
+                return redirect("//error", code=302)
+
+        return decorated_function
+
+    return decorator

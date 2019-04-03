@@ -20,15 +20,25 @@ vcr = vcr.VCR(
 
 
 @pytest.fixture(scope="session")
-def client():
+def authenticated():
     """Setup a flask test client. This is used to connect to the test
     server and make requests.
     """
 
     app.config["TESTING"] = True
     app.config["verify_oidc"] = False
-    client = app.test_client()
-    return client
+    unauthenticated = app.test_client()
+    return unauthenticated
+
+
+@pytest.fixture(scope="session")
+def unauthenticated():
+    """Setup a flask test unauthenticated. This is used to connect to the test
+    server and make requests.
+    """
+
+    unauthenticated = app.test_client()
+    return unauthenticated
 
 
 @pytest.fixture(scope="session")
@@ -40,16 +50,44 @@ def alb_https_odic_get_root():
 
 
 @vcr.use_cassette()
-def test_root(client, alb_https_odic_get_root):
+def test_root(authenticated, alb_https_odic_get_root):
     """Test the '/' route to check that the output is html and contains 'Hello'
     """
-    result = client.get("/", headers=alb_https_odic_get_root["headers"])
+    result = authenticated.get("/", headers=alb_https_odic_get_root["headers"])
     assert b"Hello" in result.data
 
 
-def test_good_to_go(client):
+@vcr.use_cassette()
+def test_root_without_login(unauthenticated, alb_https_odic_get_root):
+    """Test the '/' route to check that unathenticated users are redirected.
+    """
+    result = unauthenticated.get("/")
+    print(result.data)
+    assert 302 == result.status_code
+
+
+def test_good_to_go(unauthenticated):
     """Test the '/__gtg' endpoint works and returns the text 'Good to
     Go!'. This is used by the ELB healthcheck.
     """
-    result = client.get("/__gtg")
+    result = unauthenticated.get("/__gtg")
     assert b"Good to Go!" in result.data
+
+
+@vcr.use_cassette()
+def test_good_staic_path(authenticated, alb_https_odic_get_root):
+    """Test the dynamic static endpoint works and returns the contents of
+    the correct file from `static`
+
+    """
+    result = authenticated.get("/test.html", headers=alb_https_odic_get_root["headers"])
+    assert b"Test!" in result.data
+
+
+@vcr.use_cassette()
+def test_root_without_login(unauthenticated, alb_https_odic_get_root):
+    """Test the dynamic static endpoint redirects with a 302 when unathenticated.
+    """
+    result = unauthenticated.get("/")
+    print(result.data)
+    assert 302 == result.status_code
