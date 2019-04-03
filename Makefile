@@ -1,23 +1,26 @@
-.DEFAULT_GOAL := deploy
+.DEFAULT_GOAL := zip
 .PHONY = clean
 
 test:
-	tox
+	rm setup.cfg; tox
 
 target_dir: test
-	mkdir -p .target
+	mkdir -p .target/static
 
 copy_src: target_dir
-	cp firebreakq1faas/*.py .target
+	cp firebreakq1faas/*.py .target; cp -R firebreakq1faas/static/* .target/static/
 
 add_deps: target_dir
-	pip3 install -r  requirements.txt -t .target
+	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt -t .target
 
 clean:
-	rm -rf .target *.egg-info .tox venv *.zip .pytest_cache htmlcov **/__pycache__
+	rm -rf .target *.egg-info .tox venv *.zip .pytest_cache htmlcov **/__pycache__ **/*.pyc
 
 zip: add_deps copy_src
 	cd .target; zip -9 ../firebreakq1faas.zip -r .
 
 deploy: zip
 	cd terraform/firebreak-q1-event-normalisation; terraform apply
+
+run: add_deps copy_src
+	python3 .target/app.py

@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from oidc import login
 from slogging import log
 import traceback
@@ -19,7 +19,9 @@ def hello_world():
         tb = ""
     except Exception:
         tb = traceback.format_exc()
-        login_details = "LOGIN FAILED"
+        login_details = {"msg": "LOGIN FAILED", "picture": "null"}
+
+    print(tb, login_details)
     response = f"""<html>
     <head>
     <title>Hello World!</title>
@@ -62,3 +64,13 @@ def good_to_go():
     </body>
     </html>"""
     return response
+
+
+@app.route('/<path:path>')
+def send_static(path):
+    print(path)
+    return send_from_directory('static', path)
+
+
+if __name__ == "__main__":
+    app.run(port=5000)
