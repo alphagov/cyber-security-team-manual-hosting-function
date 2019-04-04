@@ -95,8 +95,8 @@ jobs:
       params:
         ENV: demo
         ACCOUNT_ID: '489877524855'
-        OIDC_CLIENT_ID: ((oidc_client_id))
-        OIDC_CLIENT_SECRET: ((oidc_client_secret))
+        TF_VAR_oidc_client_id: ((oidc_client_id))
+        TF_VAR_oidc_client_secret: ((oidc_client_secret))
         AWS_ACCESS_KEY_ID: ((demo-deploy-user-access-key))
         AWS_SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
         AWS_DEFAULT_REGION: 'eu-west-2'
@@ -113,8 +113,6 @@ jobs:
             ROOT_DIR=$(pwd)
             cd firebreak-q1-faas-build/terraform/firebreak-q1-event-normalisation/
             terraform init
-            terraform apply -auto-approve \
-                  -var "oidc_client_id=${OIDC_CLIENT_ID}" \
-                  -var "oidc_client_secret=${OIDC_CLIENT_SECRET}"
+            terraform apply -auto-approve
       inputs:
         - name: firebreak-q1-faas-build 
