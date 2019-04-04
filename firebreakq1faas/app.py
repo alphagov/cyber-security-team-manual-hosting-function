@@ -30,7 +30,7 @@ def hello_world():
     <style>
     html, body {{
     margin: 0; padding: 0;
-    font-family: arial; font-weight: 700; font-size: 3em;
+    font-family: arial; font-weight: 700; font-size: 0.8em;
     text-align: center;
     }}
     </style>
@@ -56,7 +56,7 @@ def good_to_go():
     <style>
     html, body {
     margin: 0; padding: 0;
-    font-family: arial; font-weight: 700; font-size: 3em;
+    font-family: arial; font-weight: 700; font-size: 0.8em;
     text-align: center;
     }
     </style>
