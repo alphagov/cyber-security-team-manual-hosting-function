@@ -123,7 +123,7 @@ resource "aws_lb_listener_rule" "route_unauthenticated" {
     type             = "redirect"
 
     redirect {
-      path             = "/path"
+      path             = "/login"
       port             = "443"
       protocol         = "HTTPS"
       status_code      = "HTTP_302"
