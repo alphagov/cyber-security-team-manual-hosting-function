@@ -75,7 +75,7 @@ def test_good_to_go(unauthenticated):
 
 
 @vcr.use_cassette()
-def test_good_staic_path(authenticated, alb_https_odic_get_root):
+def test_good_static_path(authenticated, alb_https_odic_get_root):
     """Test the dynamic static endpoint works and returns the contents of
     the correct file from `static`
 

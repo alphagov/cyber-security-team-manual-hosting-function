@@ -80,7 +80,7 @@ def login_required(app):
                 return f(login_details, *args, **kwargs)
             except Exception as e:
                 print(e)
-                return redirect("//error", code=302)
+                return redirect("/auth", code=302)
 
         return decorated_function
 

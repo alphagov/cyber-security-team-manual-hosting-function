@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, render_template
+from flask import Flask, request, send_from_directory, render_template, redirect
 from oidc import login_required
 from slogging import log
 import traceback
@@ -56,7 +56,7 @@ def good_to_go():
     return response
 
 
-@app.route("/raise_error")
+@app.route("/error")
 def raise_error():
     raise Exception("Bad Error")
 
@@ -81,6 +81,20 @@ def handle_bad_request(e):
             "error.html", title=f"{mastertitle} - Error", govukfrontendver="2.9.0"
         ),
         500,
+    )
+
+
+@app.route("/login")
+@login_required(app)
+def send_login(login_details, path):
+    return redirect("/index.html", code=302)
+
+
+@app.route("/auth")
+def send_auth():
+    return (
+        render_template("auth.html", title=f"{mastertitle}", govukfrontendver="2.9.0"),
+        200,
     )
 
 
