@@ -30,4 +30,4 @@ jobs:
       trigger: true
     - put: team-manual-faas-image
       params:
-        build: firebreak-q1-faas-git/terraform/team-manual-faas-dockerfile
+        build: firebreak-q1-faas-git/terraform
