@@ -54,7 +54,8 @@ jobs:
       trigger: true
     - put: team-manual-image
       params:
-        build: firebreak-q1-faas-git/terraform/team-manual-image
+        dockerfile: firebreak-q1-faas-git/terraform/team-manual-image/Dockerfile
+        build: cyber-security-team-manual-gemfile-git
 
 - name: build-faas-team-manual-image
   build_logs_to_retain: 10
@@ -64,7 +65,8 @@ jobs:
       trigger: true
     - put: faas-team-manual-image
       params:
-        build: firebreak-q1-faas-git/terraform/faas-team-manual-image
+        dockerfile: firebreak-q1-faas-git/terraform/faas-team-manual-image/Dockerfile
+        build: firebreak-q1-faas-git
 
 - name: build-deploy-team-manual-to-faas
   serial: true
