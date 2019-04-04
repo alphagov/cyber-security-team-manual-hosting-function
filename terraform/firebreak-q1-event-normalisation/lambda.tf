@@ -1,4 +1,10 @@
 # Lambda
+
+resource "random_string" "password" {
+  length = 32
+  special = false
+}
+
 resource "aws_lambda_function" "firebreakq1faas" {
   filename         = "../../firebreakq1faas.zip"
   source_code_hash = "${filebase64sha256("../../firebreakq1faas.zip")}"
@@ -10,6 +16,7 @@ resource "aws_lambda_function" "firebreakq1faas" {
   environment {
     variables = {
       SECRET_KEY = "${random_string.password.result}"
+      TEST_VAR   = "testing"
     }
   }
 
@@ -17,11 +24,6 @@ resource "aws_lambda_function" "firebreakq1faas" {
   #   subnet_ids = ["${aws_subnet.alb-frontend-subnet1-AZ-A.id}", "${aws_subnet.alb-frontend-subnet2-AZ-B.id}"]
   #   security_group_ids = ["${aws_security_group.event-normalisation-lambda-ingress.id}", "${aws_security_group.event-normalisation-lambda-egress.id}"]
   # }
-}
-
-resource "random_string" "password" {
-  length = 32
-  special = false
 }
 
 resource "aws_iam_role" "firebreakq1faas_iam_lambda" {

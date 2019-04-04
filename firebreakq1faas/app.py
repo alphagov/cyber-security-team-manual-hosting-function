@@ -1,3 +1,4 @@
+import os
 from flask import (
     Flask,
     session,
@@ -15,13 +16,14 @@ app = Flask(__name__)
 mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
+@app.route("/var_test")
+def var_test():
+    return os.getenv("TEST_VAR", "NOT SET")
+
+
 @app.route("/")
 def index():
-    print(str(session))
-    if "AWSELBAuthSessionCookie" in request.cookies:
-        return redirect("/index.html", code=302)
-    else:
-        return redirect("/login", code=302)
+    return redirect("/index.html", code=302)
 
 
 @app.route("/__gtg")

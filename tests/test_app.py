@@ -57,7 +57,7 @@ def test_root(authenticated, alb_https_odic_get_root):
     """
     result = authenticated.get("/", headers=alb_https_odic_get_root["headers"])
     # for authenticated this should be index.html, need to work out sessions
-    assert b"/login" in result.data and 302 == result.status_code
+    assert b"/index.html" in result.data and 302 == result.status_code
 
 
 @vcr.use_cassette()
