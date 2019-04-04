@@ -36,9 +36,7 @@ jobs:
   serial: true
   plan:
   - get: firebreak-q1-faas-git
-    trigger: true
   - get: cyber-security-team-manual-git
-    trigger: true
 
   - task: build-team-manual-lambda
     config:
