@@ -51,10 +51,11 @@ def alb_https_odic_get_root():
 
 @vcr.use_cassette()
 def test_root(authenticated, alb_https_odic_get_root):
-    """Test the '/' route to check that the output is html and contains 'Hello'
+    """Test the '/' route to check that the output is html and
+    contains '/index.html' and the status code is a 302 redirect
     """
     result = authenticated.get("/", headers=alb_https_odic_get_root["headers"])
-    assert b"Hello" in result.data
+    assert b"/index.html" in result.data and 302 == result.status_code
 
 
 @vcr.use_cassette()
