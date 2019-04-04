@@ -7,10 +7,21 @@ resource "aws_lambda_function" "firebreakq1faas" {
   handler          = "lambda_handler.lambda_handler"
   runtime          = "${var.runtime}"
 
+  environment {
+    variables = {
+      SECRET_KEY = "${random_string.password.result}"
+    }
+  }
+
   # vpc_config {
   #   subnet_ids = ["${aws_subnet.alb-frontend-subnet1-AZ-A.id}", "${aws_subnet.alb-frontend-subnet2-AZ-B.id}"]
   #   security_group_ids = ["${aws_security_group.event-normalisation-lambda-ingress.id}", "${aws_security_group.event-normalisation-lambda-egress.id}"]
   # }
+}
+
+resource "random_string" "password" {
+  length = 32
+  special = false
 }
 
 resource "aws_iam_role" "firebreakq1faas_iam_lambda" {

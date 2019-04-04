@@ -3,7 +3,7 @@ import requests
 import base64
 import json
 from slogging import log
-from flask import request, redirect
+from flask import request, redirect, session
 from functools import wraps
 
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html
@@ -61,6 +61,27 @@ def login(encoded_jwt, verify=True):
     return payload
 
 
+def is_logged_in(app):
+    if app.config.get("ENV", "production") == "production":
+        try:
+            login_details = login(
+                request.headers["X-Amzn-Oidc-Data"],
+                verify=app.config.get("verify_oidc", True),
+            )
+            session.new = True
+            session["production_session"] = True
+            session["login_details"] = login_details
+            return True
+        except Exception as e:
+            print(e)
+            session.clear()
+            return False
+    else:
+        session.new = True
+        session["auth_debug"] = True
+        return True
+
+
 def login_required(app):
     """Decorator for flask routes to login using oidc.
 
@@ -72,15 +93,15 @@ def login_required(app):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            try:
-                login_details = login(
-                    request.headers["X-Amzn-Oidc-Data"],
-                    verify=app.config.get("verify_oidc", True),
-                )
-                return f(login_details, *args, **kwargs)
-            except Exception as e:
-                print(e)
-                return redirect("/login", code=302)
+            if app.config.get("ENV", "production") == "production":
+                if "production_session" in session and "login_details" in session:
+                    if session["production_session"] and session["login_details"]:
+                        return f(session["login_details"], *args, **kwargs)
+            else:
+                if "auth_debug" in session and session["auth_debug"]:
+                    return f({}, *args, **kwargs)
+
+            return redirect("/login", code=302)
 
         return decorated_function
 

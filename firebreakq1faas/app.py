@@ -1,5 +1,12 @@
-from flask import Flask, request, send_from_directory, render_template, redirect
-from oidc import login_required
+from flask import (
+    Flask,
+    session,
+    request,
+    send_from_directory,
+    render_template,
+    redirect,
+)
+from oidc import login_required, is_logged_in
 from slogging import log
 import traceback
 
@@ -10,7 +17,7 @@ mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 @app.route("/")
 def index():
-    print(request.cookies)
+    print(str(session))
     if "AWSELBAuthSessionCookie" in request.cookies:
         return redirect("/index.html", code=302)
     else:
@@ -29,6 +36,14 @@ def good_to_go():
 @app.route("/error")
 def raise_error():
     raise Exception("Bad Error")
+
+
+@app.route("/auth")
+def handle_auth():
+    if is_logged_in(app):
+        return redirect("/index.html", code=302)
+    else:
+        return redirect("/login", code=302)
 
 
 @app.errorhandler(404)
@@ -62,6 +77,12 @@ def send_login():
     )
 
 
+@app.route("/logout")
+def send_logout():
+    session.clear()
+    return redirect("/login", code=302)
+
+
 @app.route("/assets/<path:path>")
 def send_assets(path):
     return send_from_directory("static/assets", path)
@@ -74,4 +95,9 @@ def send_static(login_details, path):
 
 
 if __name__ == "__main__":
+    app.secret_key = "notrandomkey"
+    app.config["ENV"] = "development"
+    app.config["TESTING"] = True
+    app.config["DEBUG"] = True
+    app.config["verify_oidc"] = False
     app.run(port=5000)

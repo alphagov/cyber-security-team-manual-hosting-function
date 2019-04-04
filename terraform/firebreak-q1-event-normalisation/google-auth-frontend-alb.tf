@@ -37,6 +37,16 @@ resource "aws_lb_listener" "event-normalisation-listner" {
   certificate_arn   = "${var.alb_certificate_arn}"
 
   default_action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+}
+
+resource "aws_lb_listener_rule" "route_auth" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 100
+
+  action {
     type = "authenticate-oidc"
 
     authenticate_oidc {
@@ -50,16 +60,6 @@ resource "aws_lb_listener" "event-normalisation-listner" {
     }
   }
 
-  default_action {
-    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
-    type             = "forward"
-  }
-}
-
-resource "aws_lb_listener_rule" "route_gtg" {
-  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
-  priority     = 100
-
   action {
     target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
     type             = "forward"
@@ -67,51 +67,6 @@ resource "aws_lb_listener_rule" "route_gtg" {
 
   condition {
     field  = "path-pattern"
-    values = ["/__gtg"]
-  }
-}
-
-resource "aws_lb_listener_rule" "route_login" {
-  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
-  priority     = 200
-
-  action {
-    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
-    type             = "forward"
-  }
-
-  condition {
-    field  = "path-pattern"
-    values = ["/login"]
-  }
-}
-
-resource "aws_lb_listener_rule" "route_assets" {
-  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
-  priority     = 300
-
-  action {
-    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
-    type             = "forward"
-  }
-
-  condition {
-    field  = "path-pattern"
-    values = ["/assets/*"]
-  }
-}
-
-resource "aws_lb_listener_rule" "route_root" {
-  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
-  priority     = 400
-
-  action {
-    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
-    type             = "forward"
-  }
-
-  condition {
-    field  = "path-pattern"
-    values = ["/"]
+    values = ["/auth"]
   }
 }
