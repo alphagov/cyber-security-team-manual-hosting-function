@@ -64,16 +64,16 @@ def handle_bad_request(e):
     )
 
 
-@app.route("/login")
+@app.route("/auth")
 @login_required(app)
-def send_login(login_details):
+def send_auth(login_details):
     return redirect("/index.html", code=302)
 
 
-@app.route("/auth")
-def send_auth():
+@app.route("/login")
+def send_login():
     return (
-        render_template("auth.html", title=f"{mastertitle}", govukfrontendver="2.9.0"),
+        render_template("login.html", title=f"{mastertitle}", govukfrontendver="2.9.0"),
         200,
     )
 

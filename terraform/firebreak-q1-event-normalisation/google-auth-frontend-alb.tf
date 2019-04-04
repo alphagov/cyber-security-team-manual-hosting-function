@@ -37,6 +37,31 @@ resource "aws_lb_listener" "event-normalisation-listner" {
   certificate_arn   = "${var.alb_certificate_arn}"
 
   default_action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+}
+
+resource "aws_lb_listener_rule" "gtg" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 100
+
+  action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+
+  condition {
+    field  = "path-pattern"
+    values = ["/__gtg"]
+  }
+}
+
+resource "aws_lb_listener_rule" "auth" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 200
+
+  action {
     type = "authenticate-oidc"
 
     authenticate_oidc {
@@ -50,8 +75,13 @@ resource "aws_lb_listener" "event-normalisation-listner" {
     }
   }
 
-  default_action {
+  action {
     target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
     type             = "forward"
+  }
+
+  condition {
+    field  = "path-pattern"
+    values = ["/auth"]
   }
 }
