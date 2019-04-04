@@ -63,7 +63,10 @@ def handle_bad_request(e):
 def handle_bad_request(e):
     return (
         render_template(
-            "error.html", title=f"{mastertitle} - Error", govukfrontendver="2.9.0"
+            "error.html",
+            title=f"{mastertitle} - Error",
+            error=e,
+            govukfrontendver="2.9.0",
         ),
         500,
     )
