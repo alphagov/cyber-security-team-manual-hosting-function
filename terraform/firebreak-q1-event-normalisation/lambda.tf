@@ -15,7 +15,7 @@ resource "aws_lambda_function" "firebreakq1faas" {
 
   environment {
     variables = {
-      secret_key = "${random_string.password.result}"
+      SECRET_KEY = "${random_string.password.result}"
       TEST_VAR   = "testing"
     }
   }
