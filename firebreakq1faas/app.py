@@ -9,28 +9,8 @@ mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
 @app.route("/")
-@login_required(app)
-def hello_world(login_details):
-    """ A page to say hello to the world
-    """
-    log.msg("hello_world")
-    response = f"""<html>
-    <head>
-    <title>Hello World!</title>
-    <style>
-    html, body {{
-    margin: 0; padding: 0;
-    font-family: arial; font-weight: 700; font-size: 0.8em;
-    text-align: center;
-    }}
-    </style>
-    </head>
-    <body>
-    <p>Hello World!</p>
-    <img src="{login_details['picture']}">
-    </body>
-    </html>"""
-    return response
+def index():
+    return redirect("/index.html", code=302)
 
 
 @app.route("/__gtg")
