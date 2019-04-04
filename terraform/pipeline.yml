@@ -63,6 +63,7 @@ jobs:
   plan:
     - get: firebreak-q1-faas-requirements-git
       trigger: true
+    - get: firebreak-q1-faas-git
     - put: faas-team-manual-image
       params:
         dockerfile: firebreak-q1-faas-git/terraform/faas-team-manual-image/Dockerfile
