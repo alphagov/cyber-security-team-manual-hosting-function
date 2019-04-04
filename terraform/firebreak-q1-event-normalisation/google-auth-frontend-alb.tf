@@ -46,7 +46,7 @@ resource "aws_lb_listener" "event-normalisation-listner" {
       issuer                      = "https://accounts.google.com"
       token_endpoint              = "https://oauth2.googleapis.com/token"
       user_info_endpoint          = "https://openidconnect.googleapis.com/v1/userinfo"
-      on_unauthenticated_request  = "allow"
+      on_unauthenticated_request  = "authenticate"
     }
   }
 

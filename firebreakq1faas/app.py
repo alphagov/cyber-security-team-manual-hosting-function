@@ -9,7 +9,8 @@ mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
 @app.route("/")
-def index():
+@login_required(app)
+def index(login_details):
     return redirect("/index.html", code=302)
 
 
@@ -18,21 +19,7 @@ def good_to_go():
     """An unauthenticated route for health checks
     """
     log.msg("gtg")
-    response = """<html>
-    <head>
-    <title>Good to Go!</title>
-    <style>
-    html, body {
-    margin: 0; padding: 0;
-    font-family: arial; font-weight: 700; font-size: 0.8em;
-    text-align: center;
-    }
-    </style>
-    </head>
-    <body>
-    <p>Good to Go!</p>
-    </body>
-    </html>"""
+    response = "Good to Go!"
     return response
 
 
@@ -62,12 +49,6 @@ def handle_bad_request(e):
         ),
         500,
     )
-
-
-@app.route("/auth")
-@login_required(app)
-def send_auth(login_details):
-    return redirect("/index.html", code=302)
 
 
 @app.route("/login")
