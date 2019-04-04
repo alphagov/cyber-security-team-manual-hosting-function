@@ -12,6 +12,9 @@ from slogging import log
 import traceback
 
 app = Flask(__name__)
+sk = os.getenv("SECRET_KEY", "FALSE")
+if sk is not "FALSE":
+    app.server_key = sk
 
 mastertitle = "GOV.UK - Cyber Security Team Manual"
 

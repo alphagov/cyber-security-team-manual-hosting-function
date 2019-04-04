@@ -17,8 +17,4 @@ def lambda_handler(event, context):
     print(event)
     print(context)
 
-    sk = os.getenv("SECRET_KEY", "FALSE")
-    if sk is not "FALSE":
-        app.server_key = sk
-
     return serverless_wsgi.handle_request(app.app, event, context)
