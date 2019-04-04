@@ -46,7 +46,7 @@ resource "aws_lb_listener" "event-normalisation-listner" {
       issuer                      = "https://accounts.google.com"
       token_endpoint              = "https://oauth2.googleapis.com/token"
       user_info_endpoint          = "https://openidconnect.googleapis.com/v1/userinfo"
-      on_unauthenticated_request  = "authenticate"
+      on_unauthenticated_request  = "allow"
     }
   }
 
@@ -98,40 +98,5 @@ resource "aws_lb_listener_rule" "route_assets" {
   condition {
     field  = "path-pattern"
     values = ["/assets/*"]
-  }
-}
-
-resource "aws_lb_listener_rule" "route_unauthenticated" {
-  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
-  priority     = 400
-
-  action {
-    type = "authenticate-oidc"
-
-    authenticate_oidc {
-      authorization_endpoint      = "https://accounts.google.com/o/oauth2/v2/auth"
-      client_id                   = "${var.oidc_client_id}"
-      client_secret               = "${var.oidc_client_secret}"
-      issuer                      = "https://accounts.google.com"
-      token_endpoint              = "https://oauth2.googleapis.com/token"
-      user_info_endpoint          = "https://openidconnect.googleapis.com/v1/userinfo"
-      on_unauthenticated_request  = "allow"
-    }
-  }
-
-  action {
-    type             = "redirect"
-
-    redirect {
-      path             = "/login"
-      port             = "443"
-      protocol         = "HTTPS"
-      status_code      = "HTTP_302"
-    }
-  }
-
-  condition {
-    field  = "path-pattern"
-    values = ["*"]
   }
 }

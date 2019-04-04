@@ -15,15 +15,4 @@ def lambda_handler(event, context):
     """
     print(event)
     print(context)
-
-    return {
-      "statusCode": 302,
-      "headers": {
-        "Content-Type": "text/html; charset=utf-8",
-        "Location": "https://www.google.com"
-      },
-      "statusDescription": "302 Found",
-      "body": "",
-      "isBase64Encoded": false
-    }
-    #return serverless_wsgi.handle_request(app.app, event, context)
+    return serverless_wsgi.handle_request(app.app, event, context)
