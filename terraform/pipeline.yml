@@ -74,8 +74,8 @@ jobs:
           cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
           cd firebreak-q1-faas-build
           yum install -y $(cat terraform/yum-install.txt)
-          pip3 install --upgrade pip
-          pip install tox
+          python3 -m pip install --upgrade pip
+          python3 -m pip install tox
           make zip 
       inputs:
       - name: firebreak-q1-faas-git
