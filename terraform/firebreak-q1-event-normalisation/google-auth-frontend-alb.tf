@@ -37,12 +37,26 @@ resource "aws_lb_listener" "event-normalisation-listner" {
   certificate_arn   = "${var.alb_certificate_arn}"
 
   default_action {
+    type = "authenticate-oidc"
+
+    authenticate_oidc {
+      authorization_endpoint      = "https://accounts.google.com/o/oauth2/v2/auth"
+      client_id                   = "${var.oidc_client_id}"
+      client_secret               = "${var.oidc_client_secret}"
+      issuer                      = "https://accounts.google.com"
+      token_endpoint              = "https://oauth2.googleapis.com/token"
+      user_info_endpoint          = "https://openidconnect.googleapis.com/v1/userinfo"
+      on_unauthenticated_request  = "allow"
+    }
+  }
+
+  default_action {
     target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
     type             = "forward"
   }
 }
 
-resource "aws_lb_listener_rule" "gtg" {
+resource "aws_lb_listener_rule" "route_gtg" {
   listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
   priority     = 100
 
@@ -57,23 +71,9 @@ resource "aws_lb_listener_rule" "gtg" {
   }
 }
 
-resource "aws_lb_listener_rule" "auth" {
+resource "aws_lb_listener_rule" "route_login" {
   listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
   priority     = 200
-
-  action {
-    type = "authenticate-oidc"
-
-    authenticate_oidc {
-      authorization_endpoint      = "https://accounts.google.com/o/oauth2/v2/auth"
-      client_id                   = "${var.oidc_client_id}"
-      client_secret               = "${var.oidc_client_secret}"
-      issuer                      = "https://accounts.google.com"
-      token_endpoint              = "https://oauth2.googleapis.com/token"
-      user_info_endpoint          = "https://openidconnect.googleapis.com/v1/userinfo"
-      on_unauthenticated_request  = "allow"
-    }
-  }
 
   action {
     target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
@@ -82,6 +82,51 @@ resource "aws_lb_listener_rule" "auth" {
 
   condition {
     field  = "path-pattern"
-    values = ["/auth"]
+    values = ["/login"]
+  }
+}
+
+resource "aws_lb_listener_rule" "route_assets" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 300
+
+  action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+
+  condition {
+    field  = "path-pattern"
+    values = ["/assets/*"]
+  }
+}
+
+resource "aws_lb_listener_rule" "route_static_css" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 400
+
+  action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+
+  condition {
+    field  = "path-pattern"
+    values = ["/govuk-frontend-*.css"]
+  }
+}
+
+resource "aws_lb_listener_rule" "route_static_js" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 500
+
+  action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+
+  condition {
+    field  = "path-pattern"
+    values = ["/govuk-frontend-*.js"]
   }
 }
