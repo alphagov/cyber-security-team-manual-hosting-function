@@ -9,7 +9,8 @@ mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
 @app.route("/")
-def index():
+@login_required(app)
+def index(login_details):
     return redirect("/index.html", code=302)
 
 

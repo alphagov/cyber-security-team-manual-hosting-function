@@ -100,3 +100,18 @@ resource "aws_lb_listener_rule" "route_assets" {
     values = ["/assets/*"]
   }
 }
+
+resource "aws_lb_listener_rule" "route_root" {
+  listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
+  priority     = 400
+
+  action {
+    target_group_arn = "${aws_lb_target_group.event-normalisation-tg.arn}"
+    type             = "forward"
+  }
+
+  condition {
+    field  = "path-pattern"
+    values = ["/"]
+  }
+}
