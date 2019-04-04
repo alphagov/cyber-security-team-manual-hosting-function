@@ -9,9 +9,11 @@ mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
 @app.route("/")
-@login_required(app)
-def index(login_details):
-    return redirect("/index.html", code=302)
+def index():
+    if "AWSELBAuthSessionCookie" in request.cookies:
+        return redirect("/index.html", code=302)
+    else:
+        return redirect("/login", code=302)
 
 
 @app.route("/__gtg")

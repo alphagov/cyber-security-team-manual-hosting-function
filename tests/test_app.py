@@ -27,8 +27,9 @@ def authenticated():
 
     app.config["TESTING"] = True
     app.config["verify_oidc"] = False
-    unauthenticated = app.test_client()
-    return unauthenticated
+    authenticated = app.test_client()
+    authenticated.set_cookie("", "AWSELBAuthSessionCookie", "")
+    return authenticated
 
 
 @pytest.fixture(scope="session")
@@ -64,7 +65,7 @@ def test_root_without_login(unauthenticated, alb_https_odic_get_root):
     """
     result = unauthenticated.get("/")
     print(result.data)
-    assert 302 == result.status_code
+    assert b"/login" in result.data and 302 == result.status_code
 
 
 def test_good_to_go(unauthenticated):
