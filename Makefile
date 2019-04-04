@@ -2,7 +2,7 @@
 .PHONY = clean
 
 test:
-	rm setup.cfg || True
+	rm setup.cfg; tox
 
 target_dir: test
 	mkdir -p .target/static
