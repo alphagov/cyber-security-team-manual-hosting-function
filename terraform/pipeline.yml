@@ -13,8 +13,24 @@ resources:
     private_key: ((cyber-security-team-manual-read-only-ssh-private-key))
     uri: git@github.com:alphagov/cyber-security-team-manual.git
 
+- name: team-manual-faas-image
+  type: docker-image
+  source:
+    repository: ((readonly_private_ecr_repo_url))
+    tag: team-manual-faas-latest
+
 jobs:
-- name: deploy-firebreak-q1-faas
+- name: build-team-manual-faas-image
+  build_logs_to_retain: 10
+  serial: true
+  plan:
+    - get: firebreak-q1-faas-git
+      trigger: true
+    - put: team-manual-faas-image
+      params:
+        build: firebreak-q1-faas-git/terraform/
+
+- name: deploy-team-manual-faas
   serial: true
   plan:
   - get: firebreak-q1-faas-git
@@ -22,65 +38,38 @@ jobs:
   - get: cyber-security-team-manual-git
     trigger: true
 
-  - task: build-team-manual-docs
+  - task: build-team-manual-lambda
     config:
       platform: linux
       image_resource:
         type: docker-image
         source:
-          repository: ruby
-          tag: 2.6.2
+          repository: ((readonly_private_ecr_repo_url))
+          tag: team-manual-faas-latest
       run:
         path: bash
         args:
         - -c
         - |
           set -ueo pipefail
-
-          # Concourse inputs and outputs cannot be the same directory
-          # cyber-security-team-manual-build will be deployed to paas
-          # after everything has been built
+          echo "Building the Static HTML for the Team Manual"
           cp -R cyber-security-team-manual-git/* cyber-security-team-manual-build/
-
           cd cyber-security-team-manual-build
-
-          # Node.js is required for building assets
-          apt-get update
-          apt-get install -y nodejs
-
           bundle install
           bundle exec middleman build
+
+          echo "Building the Python Lambda Function to Host the Team Manual"
+          cd ..
+          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
+          cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/
+          cd firebreak-q1-faas-build
+          make zip
+
       inputs:
       - name: cyber-security-team-manual-git
-      outputs:
-      - name: cyber-security-team-manual-build
-
-  - task: build-python-lambda-zip
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: amazonlinux
-          tag: latest
-      run:
-        path: bash
-        args:
-        - -c
-        - |
-          set -ueo pipefail
-          echo "Copying Source from repos"
-          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
-          cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/ 
-          cd firebreak-q1-faas-build
-          yum install -y $(cat terraform/yum-install.txt)
-          python3 -m pip install --upgrade pip
-          python3 -m pip install tox
-          make zip 
-      inputs:
       - name: firebreak-q1-faas-git
-      - name: cyber-security-team-manual-build
       outputs:
+      - name: cyber-security-team-manual-build
       - name: firebreak-q1-faas-build
 
   - task: apply-terraform
