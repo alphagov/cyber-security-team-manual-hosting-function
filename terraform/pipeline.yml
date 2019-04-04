@@ -31,3 +31,79 @@ jobs:
     - put: team-manual-faas-image
       params:
         build: firebreak-q1-faas-git/terraform
+
+- name: deploy-team-manual-faas
+  serial: true
+  plan:
+  - get: firebreak-q1-faas-git
+    trigger: true
+  - get: cyber-security-team-manual-git
+    trigger: true
+
+  - task: build-team-manual-lambda
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ((readonly_private_ecr_repo_url))
+          tag: team-manual-faas-latest
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -ueo pipefail
+          echo "Building the Static HTML for the Team Manual"
+          cp -R cyber-security-team-manual-git/* cyber-security-team-manual-build/
+          cd cyber-security-team-manual-build
+          bundle install
+          bundle exec middleman build
+
+          echo "Building the Python Lambda Function to Host the Team Manual"
+          cd ..
+          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
+          cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/
+          cd firebreak-q1-faas-build
+          make zip
+
+      inputs:
+      - name: cyber-security-team-manual-git
+      - name: firebreak-q1-faas-git
+      outputs:
+      - name: cyber-security-team-manual-build
+      - name: firebreak-q1-faas-build
+
+  - task: apply-terraform
+    timeout: 15m
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: gdsre/aws-terraform
+          tag: 18.04-0.11.13
+      params:
+        ENV: demo
+        ACCOUNT_ID: '489877524855'
+        TF_VAR_oidc_client_id: ((oidc_client_id))
+        TF_VAR_oidc_client_secret: ((oidc_client_secret))
+        AWS_ACCESS_KEY_ID: ((demo-deploy-user-access-key))
+        AWS_SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
+        AWS_DEFAULT_REGION: 'eu-west-2'
+
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            set -ue
+
+            # Show what command terraform is running
+            set -x
+            ROOT_DIR=$(pwd)
+            cd firebreak-q1-faas-build/terraform/firebreak-q1-event-normalisation/
+            terraform init
+            terraform apply -auto-approve
+      inputs:
+        - name: firebreak-q1-faas-build 
