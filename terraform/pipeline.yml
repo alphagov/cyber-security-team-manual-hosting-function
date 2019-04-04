@@ -126,3 +126,36 @@ jobs:
         - name: firebreak-q1-faas-git
       outputs:
         - name: firebreak-q1-faas-build
+
+  - task: apply-terraform
+    timeout: 15m
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: gdsre/aws-terraform
+          tag: 18.04-0.11.13
+      params:
+        ENV: demo
+        ACCOUNT_ID: '489877524855'
+        TF_VAR_oidc_client_id: ((oidc_client_id))
+        TF_VAR_oidc_client_secret: ((oidc_client_secret))
+        AWS_ACCESS_KEY_ID: ((demo-deploy-user-access-key))
+        AWS_SECRET_ACCESS_KEY: ((demo-deploy-user-secret-access-key))
+        AWS_DEFAULT_REGION: 'eu-west-2'
+
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            set -ue
+            # Show what command terraform is running
+            set -x
+            ROOT_DIR=$(pwd)
+            cd firebreak-q1-faas-build/terraform/firebreak-q1-event-normalisation/
+            terraform init
+            terraform apply -auto-approve
+      inputs:
+        - name: firebreak-q1-faas-build 
