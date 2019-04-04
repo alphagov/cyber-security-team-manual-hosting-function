@@ -2,7 +2,7 @@ resources:
 - name: firebreak-q1-faas-git
   type: git
   source:
-    branch: make-image-for-ecr
+    branch: master
     private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
     uri: git@github.com:alphagov/firebreak-q1-faas.git
     ignored_paths: [requirements.txt, requirements-dev.txt]
@@ -10,7 +10,7 @@ resources:
 - name: firebreak-q1-faas-requirements-git
   type: git
   source:
-    branch: make-image-for-ecr
+    branch: master
     private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
     uri: git@github.com:alphagov/firebreak-q1-faas.git
     paths: [requirements.txt]
@@ -77,14 +77,16 @@ jobs:
   - get: cyber-security-team-manual-git
     trigger: true
 
+  - get: team-manual-image
+    passed: [build-team-manual-image]
+
+  - get: faas-team-manual-image
+    passed: [build-faas-team-manual-image]
+
   - task: build-team-manual
+    image: team-manual-image
     config:
       platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: ((readonly_private_ecr_repo_url))
-          tag: team-manual-latest
       run:
         path: bash
         args:
@@ -102,13 +104,9 @@ jobs:
         - name: cyber-security-team-manual-build
 
   - task: build-team-manual-lambda
+    image: faas-team-manual-image
     config:
       platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: ((readonly_private_ecr_repo_url))
-          tag: faas-team-manual-latest
       run:
         path: bash
         args:
