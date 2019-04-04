@@ -5,6 +5,15 @@ resources:
     branch: make-image-for-ecr
     private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
     uri: git@github.com:alphagov/firebreak-q1-faas.git
+    ignored_paths: [requirements.txt, requirements-dev.txt]
+
+- name: firebreak-q1-faas-requirements-git
+  type: git
+  source:
+    branch: make-image-for-ecr
+    private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
+    uri: git@github.com:alphagov/firebreak-q1-faas.git
+    paths: [requirements.txt]
 
 - name: cyber-security-team-manual-git
   type: git
@@ -12,40 +21,67 @@ resources:
     branch: master
     private_key: ((cyber-security-team-manual-read-only-ssh-private-key))
     uri: git@github.com:alphagov/cyber-security-team-manual.git
+    ignored_paths: [Gemfile, Gemfile.lock]
 
-- name: team-manual-faas-image
+- name: cyber-security-team-manual-gemfile-git
+  type: git
+  source:
+    branch: master
+    private_key: ((cyber-security-team-manual-read-only-ssh-private-key))
+    uri: git@github.com:alphagov/cyber-security-team-manual.git
+    paths: [Gemfile, Gemfile.lock]
+
+- name: team-manual-image
   type: docker-image
   source:
     repository: ((readonly_private_ecr_repo_url))
-    tag: team-manual-faas-latest
+    tag: team-manual-latest
+
+- name: faas-team-manual-image
+  type: docker-image
+  source:
+    repository: ((readonly_private_ecr_repo_url))
+    tag: faas-team-manual-latest
 
 jobs:
-- name: build-team-manual-faas-image
+- name: build-team-manual-image
   build_logs_to_retain: 10
   serial: true
   plan:
+    - get: cyber-security-team-manual-gemfile-git
+      trigger: true
     - get: firebreak-q1-faas-git
       trigger: true
-    - get: cyber-security-team-manual-git
-      trigger: true
-    - put: team-manual-faas-image
+    - put: team-manual-image
       params:
-        build: firebreak-q1-faas-git/terraform
+        build: firebreak-q1-faas-git/terraform/team-manual-image
 
-- name: deploy-team-manual-faas
+- name: build-faas-team-manual-image
+  build_logs_to_retain: 10
+  serial: true
+  plan:
+    - get: firebreak-q1-faas-requirements-git
+      trigger: true
+    - put: faas-team-manual-image
+      params:
+        build: firebreak-q1-faas-git/terraform/faas-team-manual-image
+
+- name: build-deploy-team-manual-to-faas
   serial: true
   plan:
   - get: firebreak-q1-faas-git
+    trigger: true
   - get: cyber-security-team-manual-git
+    trigger: true
 
-  - task: build-team-manual-lambda
+  - task: build-team-manual
     config:
       platform: linux
       image_resource:
         type: docker-image
         source:
           repository: ((readonly_private_ecr_repo_url))
-          tag: team-manual-faas-latest
+          tag: team-manual-latest
       run:
         path: bash
         args:
@@ -55,19 +91,35 @@ jobs:
           echo "Building the Static HTML for the Team Manual"
           cp -R cyber-security-team-manual-git/* cyber-security-team-manual-build/
           cd cyber-security-team-manual-build
-          bundle install
           bundle exec middleman build
 
+      inputs:
+        - name: cyber-security-team-manual-git
+      outputs:
+        - name: cyber-security-team-manual-build
+
+  - task: build-team-manual-lambda
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ((readonly_private_ecr_repo_url))
+          tag: faas-team-manual-latest
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -ueo pipefail 
           echo "Building the Python Lambda Function to Host the Team Manual"
-          cd ..
           cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
           cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/
           cd firebreak-q1-faas-build
           make zip
 
       inputs:
-      - name: cyber-security-team-manual-git
-      - name: firebreak-q1-faas-git
+        - name: cyber-security-team-manual-build
+        - name: firebreak-q1-faas-git
       outputs:
-      - name: cyber-security-team-manual-build
-      - name: firebreak-q1-faas-build
+        - name: firebreak-q1-faas-build
