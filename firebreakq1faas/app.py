@@ -10,6 +10,7 @@ mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 @app.route("/")
 def index():
+    print(request.cookies)
     if "AWSELBAuthSessionCookie" in request.cookies:
         return redirect("/index.html", code=302)
     else:
