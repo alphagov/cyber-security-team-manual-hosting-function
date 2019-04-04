@@ -78,6 +78,11 @@ def send_login():
     )
 
 
+@app.route("/assets/<path:path>")
+def send_assets(path):
+    return send_from_directory("static/assets", path)
+
+
 @app.route("/<path:path>")
 @login_required(app)
 def send_static(login_details, path):
