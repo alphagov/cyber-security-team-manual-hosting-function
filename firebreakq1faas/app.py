@@ -66,7 +66,7 @@ def handle_bad_request(e):
 
 @app.route("/login")
 @login_required(app)
-def send_login(login_details, path):
+def send_login(login_details):
     return redirect("/index.html", code=302)
 
 
