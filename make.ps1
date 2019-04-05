@@ -1,26 +1,36 @@
 #requires -version 3
 <#
 .SYNOPSIS
-  <Overview of script>
+  Makefile in PowerShell
 .DESCRIPTION
-  <Brief description of script>
-.PARAMETER <Parameter_Name>
-    <Brief description of parameter input required. Repeat this attribute if required>
-.INPUTS
-  <Inputs if any, otherwise state None>
-.OUTPUTS
-  <Outputs if any, otherwise state None - example: Log file stored in C:\Windows\Temp\<name>.log>
+  Script to make/test/run the firebreakq1faas project
+.PARAMETER clean
+    '-clean' Cleans the directory
+.PARAMETER test
+    '-test' Uses tox to test the project
+.PARAMETER build
+    '-build' Builds the files in .target and generates a zip
+.PARAMETER deploy
+    '-deploy' Deploys the project to terraform
+.PARAMETER plandeploy
+    '-plandeploy' Tests the terraform deploy
+.PARAMETER run
+    '-run' Runs the flask project locally on port 5000
 .NOTES
-  Version:        1.0
-  Author:         <Name>
-  Creation Date:  <Date>
-  Purpose/Change: Initial script development
+  Version:        0.2
+  Author:         Ollie - GDS
+  Creation Date:  02/04/19
+  Purpose/Change: Make PowerShell script
 
 .EXAMPLE
-  <Example goes here. Repeat this attribute for more than one example>
+  ./make.ps1 -clean     cleans the folder
+.EXAMPLE
+  ./make.ps1 -run       run the flask project locally
+.EXAMPLE
+  ./make.ps1 -test      run tox against the project
 #>
 
-#-----------------------------------------------------------[Parameters]-----------------------------------------------------------
+#---------------------[Parameters]--------------------
 
 param(
   [switch]$clean = $false,
@@ -31,7 +41,7 @@ param(
   [switch]$run = $false
 )
 
-#---------------------------------------------------------[Initialisations]--------------------------------------------------------
+#-------------------[Initialisations]-----------------
 
 $PWD = Split-Path -parent $PSCommandPath
 cd $PWD
@@ -41,14 +51,19 @@ $ErrorActionPreference = "SilentlyContinue"
 
 $TARGET_DIR = ".target"
 
-#-----------------------------------------------------------[Execution]------------------------------------------------------------
+#---------------------[Execution]---------------------
 
-if ($run -or (!$deploy -and !$build -and !$clean -and !$test -and !$plandeploy -and !$run)) {
+if ($run) {
+  $build = $true
+}
+
+if (!$deploy -and !$build -and !$clean -and !$test -and !$plandeploy -and !$run) {
   $build = $true
 }
 
 if ($clean) {
-  Remove-Item -Recurse -Force .target, *.egg-info, .tox, venv, *.zip, .pytest_cache, htmlcov, **/__pycache__, **/*.pyc
+  Remove-Item -Recurse -Force .target, *.egg-info, .tox, venv, *.zip
+  Remove-Item -Recurse -Force .pytest_cache, htmlcov, **/__pycache__, **/*.pyc
 }
 
 if ($test) {
@@ -66,11 +81,13 @@ if ($test) {
 if ($build) {
 
   if (Test-Path $TARGET_DIR) { Remove-Item $TARGET_DIR -Force -Recurse }
-  mkdir $TARGET_DIR
-  mkdir $TARGET_DIR\static
+  New-Item -ItemType "directory" $TARGET_DIR/
+  New-Item -ItemType "directory" ./$TARGET_DIR/static/
+  New-Item -ItemType "directory" ./$TARGET_DIR/templates/
 
-  cp -R firebreakq1faas/static/* .\$TARGET_DIR\static\
-  cp firebreakq1faas/*.py .\$TARGET_DIR
+  Copy-Item -Recurse firebreakq1faas/static/* $TARGET_DIR/static/
+	Copy-Item -Recurse firebreakq1faas/templates/* $TARGET_DIR/templates/
+  Copy-Item -Recurse ./firebreakq1faas/*.py ./$TARGET_DIR/
 
   pip3 install -r requirements.txt -t $TARGET_DIR
 
@@ -82,7 +99,7 @@ if ($build) {
 }
 
 if ($run) {
-  python $TARGET_DIR\app.py
+  python3 $TARGET_DIR/app.py
 }
 
 if ($plandeploy) {

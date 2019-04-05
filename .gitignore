@@ -104,7 +104,8 @@ venv.bak/
 .mypy_cache/
 
 *.zip
-*.target
+.target
+.target/*
 
 # Ignore .terraform things
 *.terraform*
