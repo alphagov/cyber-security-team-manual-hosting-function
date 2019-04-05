@@ -111,7 +111,7 @@ jobs:
         args:
         - -c
         - |
-          set -ueo pipefail 
+          set -ueo pipefail
           echo "Building the Python Lambda Function to Host the Team Manual"
           cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
           cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/
@@ -155,4 +155,4 @@ jobs:
             terraform init
             terraform apply -auto-approve
       inputs:
-        - name: firebreak-q1-faas-build 
+        - name: firebreak-q1-faas-build
