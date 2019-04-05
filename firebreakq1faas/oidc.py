@@ -8,6 +8,8 @@ from functools import wraps
 
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html
 
+PUBLIC_KEYS = {}
+
 
 def get_kid(encoded_jwt):
     """Get the ALB (K)ey (ID) from a JWT
@@ -54,7 +56,10 @@ def login(encoded_jwt, verify=True):
     log.msg("login")
     print(encoded_jwt)
     kid = get_kid(encoded_jwt)
-    public_key = get_public_key(kid)
+    public_key = PUBLIC_KEYS.get(kid, None)
+    if not public_key:
+        public_key = get_public_key(kid)
+        PUBLIC_KEYS[kid] = public_key
     payload = jwt.decode(
         encoded_jwt, public_key, algorithms=["ES256"], options={"verify_exp": verify}
     )
