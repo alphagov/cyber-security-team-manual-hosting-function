@@ -42,6 +42,22 @@ resource "aws_lb_listener" "event-normalisation-listner" {
   }
 }
 
+resource "aws_lb_listener" "event-normalisation-listner_80" {
+  load_balancer_arn = "${aws_lb.event-normalisation-alb.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
 resource "aws_lb_listener_rule" "route_auth" {
   listener_arn = "${aws_lb_listener.event-normalisation-listner.arn}"
   priority     = 100
