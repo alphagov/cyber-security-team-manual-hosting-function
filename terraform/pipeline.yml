@@ -51,7 +51,6 @@ jobs:
     - get: cyber-security-team-manual-gemfile-git
       trigger: true
     - get: firebreak-q1-faas-git
-      trigger: true
     - put: team-manual-image
       params:
         dockerfile: firebreak-q1-faas-git/terraform/team-manual-image/Dockerfile
