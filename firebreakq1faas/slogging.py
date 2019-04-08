@@ -17,4 +17,10 @@ def add_timestamp(_, __, event_dict):
     return event_dict
 
 
+def get_log():
+    return get_logger(
+        processors=[add_timestamp, JSONRenderer(indent=1, sort_keys=True)]
+    )
+
+
 log = get_logger(processors=[add_timestamp, JSONRenderer(indent=1, sort_keys=True)])

@@ -6,23 +6,46 @@ from flask import (
     send_from_directory,
     render_template,
     redirect,
+    g,
 )
 from oidc import login_required, is_logged_in
-from slogging import log
+from slogging import get_log
 import traceback
+import inspect
 
 app = Flask(__name__)
 
 mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
+@app.before_request
+def create_logger():
+    g.logger = get_log().bind(
+        request=request,
+        headers={
+            "User-Agent": request.headers.get("User-Agent", ""),
+            "Accept": request.headers.get("Accept", ""),
+            "X_Amzn_Trace_Id": request.headers.get("X-Amzn-Trace-Id", ""),
+            "X_Forwarded_For": request.headers.get("X-Forwarded-For", ""),
+        },
+    )
+
+
+@app.after_request
+def log_request(response):
+    g.logger.msg("EOR", response=response)
+    return response
+
+
 @app.route("/var_test")
 def var_test():
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     return os.getenv("TEST_VAR", "NOT SET")
 
 
 @app.route("/")
 def index():
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     return redirect("/index.html", code=302)
 
 
@@ -30,18 +53,20 @@ def index():
 def good_to_go():
     """An unauthenticated route for health checks
     """
-    log.msg("gtg")
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     response = "Good to Go!"
     return response
 
 
 @app.route("/error")
 def raise_error():
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     raise Exception("Bad Error")
 
 
 @app.route("/auth")
 def handle_auth():
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     if is_logged_in(app):
         return redirect("/index.html", code=302)
     else:
@@ -50,6 +75,8 @@ def handle_auth():
 
 @app.errorhandler(404)
 def handle_bad_request(e):
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
+    g.logger = g.logger.bind(exception=e)
     return (
         render_template(
             "error.html",
@@ -63,6 +90,8 @@ def handle_bad_request(e):
 
 @app.errorhandler(500)
 def handle_bad_request(e):
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
+    g.logger = g.logger.bind(exception=e)
     return (
         render_template(
             "error.html",
@@ -76,6 +105,7 @@ def handle_bad_request(e):
 
 @app.route("/login")
 def send_login():
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     return (
         render_template("login.html", title=f"{mastertitle}", govukfrontendver="2.9.0"),
         200,
@@ -84,18 +114,21 @@ def send_login():
 
 @app.route("/logout")
 def send_logout():
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     session.clear()
     return redirect("/login", code=302)
 
 
 @app.route("/assets/<path:path>")
 def send_assets(path):
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     return send_from_directory("static/assets", path)
 
 
 @app.route("/<path:path>")
 @login_required(app)
 def send_static(login_details, path):
+    g.logger = g.logger.bind(route=inspect.stack()[0][3])
     return send_from_directory("static", path)
 
 

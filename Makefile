@@ -14,7 +14,7 @@ copy_src: target_dir
 	cp -R firebreakq1faas/templates/* .target/templates/
 
 add_deps: target_dir
-	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt -t .target
+	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt --system -t .target
 
 clean:
 	rm -rf .target *.egg-info .tox venv *.zip .pytest_cache htmlcov **/__pycache__ **/*.pyc
@@ -26,4 +26,4 @@ deploy: zip
 	cd terraform/firebreak-q1-event-normalisation; terraform apply
 
 run: add_deps copy_src
-	python3 .target/app.py
+	FLASK_DEBUG=1 python3 .target/app.py

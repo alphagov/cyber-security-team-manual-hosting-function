@@ -3,7 +3,7 @@ import requests
 import base64
 import json
 from slogging import log
-from flask import request, redirect, session
+from flask import request, redirect, session, g
 from functools import wraps
 
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html
@@ -20,7 +20,6 @@ def get_kid(encoded_jwt):
 
     Example 'kid': '307a30c3-8280-4ff5-a78d-6bc5263ffbe8'
     """
-    log.msg("get_kid")
     jwt_headers = encoded_jwt.split(".")[0]
     decoded_jwt_headers = base64.b64decode(jwt_headers)
     decoded_jwt_headers = decoded_jwt_headers.decode("utf-8")
@@ -37,7 +36,6 @@ def get_public_key(kid, region="eu-west-2"):
     :rtype: str
 
     """
-    log.msg("get_public_key")
     url = f"https://public-keys.auth.elb.{region}.amazonaws.com/{kid}"
     req = requests.get(url)
     public_key = req.text
@@ -53,8 +51,7 @@ def login(encoded_jwt, verify=True):
     :rtype:
 
     """
-    log.msg("login")
-    print(encoded_jwt)
+
     kid = get_kid(encoded_jwt)
     public_key = PUBLIC_KEYS.get(kid, None)
     if not public_key:
@@ -79,6 +76,7 @@ def is_logged_in(app):
             return True
         except Exception as e:
             print(e)
+            g.logger = g.logger.bind(login_exception=e)
             session.clear()
             return False
     else:
@@ -101,11 +99,11 @@ def login_required(app):
             if app.config.get("ENV", "production") == "production":
                 if "production_session" in session and "login_details" in session:
                     if session["production_session"] and session["login_details"]:
+                        g.logger = g.logger.bind(session=session["login_details"])
                         return f(session["login_details"], *args, **kwargs)
             else:
                 if "auth_debug" in session and session["auth_debug"]:
                     return f({}, *args, **kwargs)
-
             return redirect("/login", code=302)
 
         return decorated_function

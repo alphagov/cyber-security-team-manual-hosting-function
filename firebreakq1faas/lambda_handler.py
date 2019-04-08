@@ -14,9 +14,6 @@ def lambda_handler(event, context):
 
 
     """
-    print(event)
-    print(context)
-
     sk = os.getenv("SECRET_KEY", "FALSE")
     if sk is not "FALSE":
         app.app.server_key = sk
