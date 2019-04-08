@@ -14,7 +14,7 @@ copy_src: target_dir
 	cp -R firebreakq1faas/templates/* .target/templates/
 
 add_deps: target_dir
-	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt --system -t .target
+	bash -c "echo -e '[install]\nprefix=\n' > setup.cfg"; pip3 install -r requirements.txt -t .target
 
 clean:
 	rm -rf .target *.egg-info .tox venv *.zip .pytest_cache htmlcov **/__pycache__ **/*.pyc
