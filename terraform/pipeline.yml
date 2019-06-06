@@ -1,18 +1,18 @@
 resources:
-- name: firebreak-q1-faas-git
+- name: team-manual-hosting-function-git
   type: git
   source:
     branch: master
     private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
-    uri: git@github.com:alphagov/firebreak-q1-faas.git
+    uri: git@github.com:alphagov/cyber-security-team-manual-hosting-function.git
     ignored_paths: [requirements.txt, requirements-dev.txt]
 
-- name: firebreak-q1-faas-requirements-git
+- name: team-manual-hosting-function-libs-git
   type: git
   source:
     branch: master
     private_key: ((firebreak-q1-faas-read-only-ssh-private-key))
-    uri: git@github.com:alphagov/firebreak-q1-faas.git
+    uri: git@github.com:alphagov/cyber-security-team-manual-hosting-function.git
     paths: [requirements.txt]
 
 - name: cyber-security-team-manual-git
@@ -23,7 +23,7 @@ resources:
     uri: git@github.com:alphagov/cyber-security-team-manual.git
     ignored_paths: [Gemfile, Gemfile.lock]
 
-- name: cyber-security-team-manual-gemfile-git
+- name: cyber-security-team-manual-libs-git
   type: git
   source:
     branch: master
@@ -31,59 +31,59 @@ resources:
     uri: git@github.com:alphagov/cyber-security-team-manual.git
     paths: [Gemfile, Gemfile.lock]
 
-- name: team-manual-image
+- name: team-manual-build-image
   type: docker-image
   source:
     repository: ((readonly_private_ecr_repo_url))
-    tag: team-manual-latest
+    tag: team-manual-build-latest
 
-- name: faas-team-manual-image
+- name: team-manual-hosting-function-build-image
   type: docker-image
   source:
     repository: ((readonly_private_ecr_repo_url))
-    tag: faas-team-manual-latest
+    tag: team-manual-hosting-function-build-latest
 
 jobs:
 - name: build-team-manual-image
   build_logs_to_retain: 10
   serial: true
   plan:
-    - get: cyber-security-team-manual-gemfile-git
+    - get: cyber-security-team-manual-libs-git
       trigger: true
-    - get: firebreak-q1-faas-git
-    - put: team-manual-image
+    - get: team-manual-hosting-function-git
+    - put: team-manual-build-image
       params:
-        dockerfile: firebreak-q1-faas-git/terraform/team-manual-image/Dockerfile
-        build: cyber-security-team-manual-gemfile-git
+        dockerfile: team-manual-hosting-function-git/terraform/team-manual-image/Dockerfile
+        build: cyber-security-team-manual-libs-git
 
-- name: build-faas-team-manual-image
+- name: build-team-manual-hosting-function-image
   build_logs_to_retain: 10
   serial: true
   plan:
-    - get: firebreak-q1-faas-requirements-git
+    - get: team-manual-hosting-function-libs-git
       trigger: true
-    - get: firebreak-q1-faas-git
-    - put: faas-team-manual-image
+    - get: team-manual-hosting-function-git
+    - put: team-manual-hosting-function-build-image
       params:
-        dockerfile: firebreak-q1-faas-git/terraform/faas-team-manual-image/Dockerfile
-        build: firebreak-q1-faas-git
+        dockerfile: team-manual-hosting-function-git/terraform/faas-team-manual-image/Dockerfile
+        build: team-manual-hosting-function-git
 
-- name: build-deploy-team-manual-to-faas
+- name: build-and-deploy-team-manual-to-lambda
   serial: true
   plan:
-  - get: firebreak-q1-faas-git
+  - get: team-manual-hosting-function-git
     trigger: true
   - get: cyber-security-team-manual-git
     trigger: true
 
-  - get: team-manual-image
+  - get: team-manual-build-image
     passed: [build-team-manual-image]
 
-  - get: faas-team-manual-image
-    passed: [build-faas-team-manual-image]
+  - get: team-manual-hosting-function-build-image
+    passed: [build-team-manual-hosting-function-image]
 
-  - task: build-team-manual
-    image: team-manual-image
+  - task: build-team-manual-static-html
+    image: team-manual-build-image
     config:
       platform: linux
       run:
@@ -102,8 +102,8 @@ jobs:
       outputs:
         - name: cyber-security-team-manual-build
 
-  - task: build-team-manual-lambda
-    image: faas-team-manual-image
+  - task: build-team-manual-lambda-function
+    image: team-manual-hosting-function-build-image
     config:
       platform: linux
       run:
@@ -113,16 +113,16 @@ jobs:
         - |
           set -ueo pipefail
           echo "Building the Python Lambda Function to Host the Team Manual"
-          cp -R firebreak-q1-faas-git/* firebreak-q1-faas-build/
-          cp -R cyber-security-team-manual-build/build/* firebreak-q1-faas-build/firebreakq1faas/static/
-          cd firebreak-q1-faas-build
+          cp -R team-manual-hosting-function-git/* team-manual-lambda-function-builddir/
+          cp -R cyber-security-team-manual-build/build/* team-manual-lambda-function-builddir/firebreakq1faas/static/
+          cd team-manual-lambda-function-builddir
           make zip
 
       inputs:
         - name: cyber-security-team-manual-build
-        - name: firebreak-q1-faas-git
+        - name: team-manual-hosting-function-git
       outputs:
-        - name: firebreak-q1-faas-build
+        - name: team-manual-lambda-function-builddir
 
   - task: apply-terraform
     timeout: 15m
@@ -151,8 +151,8 @@ jobs:
             # Show what command terraform is running
             set -x
             ROOT_DIR=$(pwd)
-            cd firebreak-q1-faas-build/terraform/firebreak-q1-event-normalisation/
+            cd team-manual-lambda-function-builddir/terraform/firebreak-q1-event-normalisation/
             terraform init
             terraform apply -auto-approve
       inputs:
-        - name: firebreak-q1-faas-build
+        - name: team-manual-lambda-function-builddir
