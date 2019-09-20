@@ -16,11 +16,6 @@ app = Flask(__name__)
 mastertitle = "GOV.UK - Cyber Security Team Manual"
 
 
-@app.route("/var_test")
-def var_test():
-    return os.getenv("TEST_VAR", "NOT SET")
-
-
 @app.route("/")
 def index():
     return redirect("/index.html", code=302)
@@ -96,6 +91,8 @@ def send_assets(path):
 @app.route("/<path:path>")
 @login_required(app)
 def send_static(login_details, path):
+    if path.endswith("/"):
+        path = f"{path}index.html"
     return send_from_directory("static", path)
 
 
